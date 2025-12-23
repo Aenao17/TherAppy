@@ -3,6 +3,7 @@ package stucanii.backend.service;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import stucanii.backend.api.error.UnauthorizedException;
 import stucanii.backend.domain.User;
 import stucanii.backend.repository.UserRepository;
 
@@ -26,4 +27,17 @@ public class UserService {
         User user = new User(username, hash);
         return userRepository.save(user);
      }
+
+    @Transactional
+    public User login(String username, String password) {
+        String normalizedUsername = username.trim();
+
+        User user = userRepository.findByUsername(normalizedUsername)
+                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new UnauthorizedException("Invalid username or password");
+        }
+        return user;
+    }
 }

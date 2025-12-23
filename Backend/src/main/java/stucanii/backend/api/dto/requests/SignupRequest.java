@@ -1,4 +1,4 @@
-package stucanii.backend.api.dto;
+package stucanii.backend.api.dto.requests;
 
 import jakarta.validation.constraints.NotBlank;
 

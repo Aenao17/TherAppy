@@ -24,4 +24,11 @@ public class ApiExceptionHandler {
         if (first == null) return Map.of("error", "Validation failed");
         return Map.of("error", first.getField() + ": " + first.getDefaultMessage());
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, String> unauthorized(UnauthorizedException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
 }

@@ -3,8 +3,9 @@ package stucanii.backend.api;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import stucanii.backend.api.dto.SignupRequest;
-import stucanii.backend.api.dto.UserResponse;
+import stucanii.backend.api.dto.requests.LoginRequest;
+import stucanii.backend.api.dto.requests.SignupRequest;
+import stucanii.backend.api.dto.responses.UserResponse;
 import stucanii.backend.domain.User;
 import stucanii.backend.service.UserService;
 
@@ -23,4 +24,11 @@ public class AuthController {
         User user = userService.signUp(req.username(),req.password());
         return new UserResponse(user.getId(), user.getUsername(), user.getRole().toString());
     }
+
+    @PostMapping("/login")
+    public UserResponse login(@Valid @RequestBody LoginRequest req) {
+        User user = userService.login(req.username(), req.password());
+        return new UserResponse(user.getId(), user.getUsername(), user.getRole().toString());
+    }
+
 }
