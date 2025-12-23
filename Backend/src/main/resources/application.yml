@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/therappy
+    url: jdbc:postgresql://localhost:5433/therappy
     username: therappy
     password: therappy
 

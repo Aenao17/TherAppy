@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: therappy
       POSTGRES_PASSWORD: therappy
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - therappy_pgdata:/var/lib/postgresql/data
 
