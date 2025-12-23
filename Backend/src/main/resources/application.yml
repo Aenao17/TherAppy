@@ -11,5 +11,12 @@ spring:
       hibernate:
         format_sql: true
 
+app:
+  jwt:
+    secret: "TudorPopaAFostAici!VaPupaHantu!StucaniiStudios,PoweredByTheBoysStudios"
+    ttlSeconds: 900
+  refresh:
+    ttlSeconds: 1209600
+
 server:
   port: 8080
