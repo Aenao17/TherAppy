@@ -1,12 +1,15 @@
 spring:
-  application:
-    name: therappy-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/therappy
+    username: therappy
+    password: therappy
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
 
 server:
   port: 8080
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
