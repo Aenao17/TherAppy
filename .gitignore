@@ -18,3 +18,10 @@ Thumbs.db
 ### Environment / secrets ###
 .env
 .env.*
+
+### Frontend ###
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.env*
+Frontend/android/
+Frontend/ios/
