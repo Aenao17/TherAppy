@@ -6,6 +6,8 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./auth/AdminRoute";
+import Inbox from "./pages/Inbox";
+
 
 
 
@@ -47,6 +49,7 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonRouterOutlet>
         <ProtectedRoute exact path="/home" component={Home} />
+        <ProtectedRoute exact path="/inbox" component={Inbox} />
         <Route exact path="/">
           <Redirect to="/login" />
         </Route>

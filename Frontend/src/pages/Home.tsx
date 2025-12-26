@@ -25,6 +25,10 @@ import {
 import { useEffect, useState } from "react";
 import { getJsonAuth, postJsonAuth } from "../api/api";
 import {clearTokens} from "../auth/authStorage";
+import { IonBadge, IonIcon } from "@ionic/react";
+import { mailUnreadOutline } from "ionicons/icons";
+import { useIonViewWillEnter } from "@ionic/react";
+
 
 
 const Home: React.FC = () => {
@@ -37,10 +41,6 @@ const Home: React.FC = () => {
         type: string;
         status: string;
         createdAt: string;
-    };
-
-    type InboxResponse = {
-        requests: InboxItem[];
     };
 
     const [psychologistUsername, setPsychologistUsername] = useState("");
@@ -56,24 +56,36 @@ const Home: React.FC = () => {
 
     const [inbox, setInbox] = useState<InboxItem[]>([]);
 
+    const [inboxCount, setInboxCount] = useState(0);
+
+    type InboxResponse = { requests: { id: number }[] };
+
     const loadInbox = async () => {
-        const resp = await getJsonAuth<InboxResponse>("/api/onboarding/inbox");
-        setInbox(resp.requests);
+        return await getJsonAuth<InboxResponse>("/api/onboarding/inbox");
     };
+
+    const refreshInboxCount = async () => {
+        const resp = await getJsonAuth<InboxResponse>("/api/onboarding/inbox");
+        setInboxCount(resp.requests.length);
+    };
+
+    useIonViewWillEnter(() => {
+        if (role === "ADMIN" || role === "PSYCHOLOGIST") {
+            refreshInboxCount().catch(() => setInboxCount(0));
+        }
+    });
 
     useEffect(() => {
         (async () => {
             if (role === "ADMIN" || role === "PSYCHOLOGIST") {
                 try {
-                    setIsLoading(true);
-                    await loadInbox();
-                } catch (e) {
-                    const msg = e instanceof Error ? e.message : "Failed to load inbox";
-                    setErrorMessage(msg);
-                    setShowError(true);
-                } finally {
-                    setIsLoading(false);
+                    await refreshInboxCount();
+                } catch {
+                    // nu blocăm UX-ul dacă count-ul pică
+                    setInboxCount(0);
                 }
+            } else {
+                setInboxCount(0);
             }
         })();
     }, [role]);
@@ -165,6 +177,33 @@ const Home: React.FC = () => {
             <IonHeader>
                 <IonToolbar>
                     <IonTitle>Home</IonTitle>
+
+                    {(role === "ADMIN" || role === "PSYCHOLOGIST") && (
+                        <IonButton
+                            slot="end"
+                            fill="clear"
+                            onClick={() => router.push("/inbox", "forward")}
+                            style={{ position: "relative" }}
+                        >
+                            <IonIcon icon={mailUnreadOutline} />
+
+                            {inboxCount > 0 && (
+                                <IonBadge
+                                    style={{
+                                        position: "absolute",
+                                        top: "2px",
+                                        right: "2px",
+                                        fontSize: "10px",
+                                        padding: "2px 6px",
+                                        borderRadius: "999px",
+                                    }}
+                                >
+                                    {inboxCount > 99 ? "99+" : inboxCount}
+                                </IonBadge>
+                            )}
+                        </IonButton>
+                    )}
+
                     <IonButton slot="end" fill="clear" onClick={handleLogout}>
                         Logout
                     </IonButton>
@@ -176,9 +215,7 @@ const Home: React.FC = () => {
                     <IonCardHeader>
                         <IonCardTitle>Current role</IonCardTitle>
                     </IonCardHeader>
-                    <IonCardContent>
-                        {role ?? "Unknown"}
-                    </IonCardContent>
+                    <IonCardContent>{role ?? "Unknown"}</IonCardContent>
                 </IonCard>
 
                 {role === "USER" && (
@@ -188,7 +225,8 @@ const Home: React.FC = () => {
                         </IonCardHeader>
                         <IonCardContent>
                             <p>
-                                Your account is currently <b>USER</b>. To use the platform, you must be added as a <b>CLIENT</b> or approved as a <b>PSYCHOLOGIST</b>.
+                                Your account is currently <b>USER</b>. To use the platform, you must be added
+                                as a <b>CLIENT</b> or approved as a <b>PSYCHOLOGIST</b>.
                             </p>
 
                             <IonItem>
@@ -234,7 +272,6 @@ const Home: React.FC = () => {
                             </IonNote>
                         </IonCardContent>
                     </IonCard>
-
                 )}
 
                 {role === "CLIENT" && (
@@ -242,50 +279,26 @@ const Home: React.FC = () => {
                         <IonCardHeader>
                             <IonCardTitle>Client area</IonCardTitle>
                         </IonCardHeader>
-                        <IonCardContent>
-                            Client home page (coming next).
-                        </IonCardContent>
+                        <IonCardContent>Client home page (coming next).</IonCardContent>
                     </IonCard>
                 )}
 
                 {role === "PSYCHOLOGIST" && (
                     <IonCard>
                         <IonCardHeader>
-                            <IonCardTitle>Inbox</IonCardTitle>
+                            <IonCardTitle>Psychologist area</IonCardTitle>
                         </IonCardHeader>
                         <IonCardContent>
-                            {inbox.length === 0 ? (
-                                <div>No pending requests.</div>
-                            ) : (
-                                <IonList>
-                                    {inbox.map((r) => (
-                                        <IonItem key={r.id}>
-                                            <IonLabel>
-                                                <div><b>{r.requesterUsername}</b></div>
-                                                <div>Type: {r.type}</div>
-                                                <div>Target: {r.targetUsername}</div>
-                                            </IonLabel>
-
-                                            <IonLabel>
-                                                <div><b>{r.requesterUsername}</b></div>
-                                                <div>Type: {r.type}</div>
-                                                <div style={{ opacity: 0.7, fontSize: 12 }}>
-                                                    {new Date(r.createdAt).toLocaleString()}
-                                                </div>
-                                            </IonLabel>
-
-                                            <IonButtons slot="end">
-                                                <IonButton size="small" onClick={() => approveRequest(r.id)} disabled={isLoading}>
-                                                    Approve
-                                                </IonButton>
-                                                <IonButton size="small" color="danger" onClick={() => rejectRequest(r.id)} disabled={isLoading}>
-                                                    Reject
-                                                </IonButton>
-                                            </IonButtons>
-                                        </IonItem>
-                                    ))}
-                                </IonList>
-                            )}
+                            <IonButton
+                                expand="block"
+                                onClick={() => router.push("/inbox", "forward")}
+                                disabled={isLoading}
+                            >
+                                Open Inbox
+                                {/* optional badge:
+              {inboxCount > 0 && <IonBadge style={{ marginLeft: 8 }}>{inboxCount}</IonBadge>}
+              */}
+                            </IonButton>
                         </IonCardContent>
                     </IonCard>
                 )}
@@ -299,49 +312,22 @@ const Home: React.FC = () => {
                             <IonButton expand="block" onClick={() => router.push("/admin", "forward")}>
                                 Open Admin Dashboard
                             </IonButton>
-                            <IonCard>
-                                <IonCardHeader>
-                                    <IonCardTitle>Inbox</IonCardTitle>
-                                </IonCardHeader>
-                                <IonCardContent>
-                                    {inbox.length === 0 ? (
-                                        <div>No pending requests.</div>
-                                    ) : (
-                                        <IonList>
-                                            {inbox.map((r) => (
-                                                <IonItem key={r.id}>
-                                                    <IonLabel>
-                                                        <div><b>{r.requesterUsername}</b></div>
-                                                        <div>Type: {r.type}</div>
-                                                        <div>Target: {r.targetUsername}</div>
-                                                    </IonLabel>
 
-                                                    <IonLabel>
-                                                        <div><b>{r.requesterUsername}</b></div>
-                                                        <div>Type: {r.type}</div>
-                                                        <div style={{ opacity: 0.7, fontSize: 12 }}>
-                                                            {new Date(r.createdAt).toLocaleString()}
-                                                        </div>
-                                                    </IonLabel>
-
-                                                    <IonButtons slot="end">
-                                                        <IonButton size="small" onClick={() => approveRequest(r.id)} disabled={isLoading}>
-                                                            Approve
-                                                        </IonButton>
-                                                        <IonButton size="small" color="danger" onClick={() => rejectRequest(r.id)} disabled={isLoading}>
-                                                            Reject
-                                                        </IonButton>
-                                                    </IonButtons>
-
-                                                </IonItem>
-                                            ))}
-                                        </IonList>
-                                    )}
-                                </IonCardContent>
-                            </IonCard>
+                            <IonButton
+                                expand="block"
+                                onClick={() => router.push("/inbox", "forward")}
+                                disabled={isLoading}
+                                className="ion-margin-top"
+                            >
+                                Open Inbox
+                                {/* optional badge:
+              {inboxCount > 0 && <IonBadge style={{ marginLeft: 8 }}>{inboxCount}</IonBadge>}
+              */}
+                            </IonButton>
                         </IonCardContent>
                     </IonCard>
                 )}
+
                 <IonLoading isOpen={isLoading} message="Please wait..." />
 
                 <IonToast
