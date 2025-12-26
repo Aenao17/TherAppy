@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import stucanii.backend.api.error.UnauthorizedException;
+import stucanii.backend.domain.Role;
 import stucanii.backend.domain.User;
 import stucanii.backend.repository.UserRepository;
 
@@ -25,6 +26,7 @@ public class UserService {
 
         String hash = passwordEncoder.encode(password);
         User user = new User(username, hash);
+        user.setRole(Role.USER);
         return userRepository.save(user);
      }
 

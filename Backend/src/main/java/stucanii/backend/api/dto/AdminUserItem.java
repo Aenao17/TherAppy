@@ -1,7 +1,7 @@
 package stucanii.backend.api.dto;
 
 public record AdminUserItem(
-        long id,
+        Integer id,
         String username,
         String role
 ) {}

@@ -108,3 +108,35 @@ export async function postJson<TResponse>(
 
     return (await res.json()) as TResponse;
 }
+
+export async function postJsonAuth<TResponse>(
+    path: string,
+    body: unknown
+): Promise<TResponse> {
+    const token = getAccessToken();
+    if (!token) throw new Error("Not authenticated");
+
+    const res = await fetch(`${BASE_URL}${path}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+        let payload: ApiError | null = null;
+        try {
+            payload = await res.json();
+        } catch {}
+        const msg = payload?.error || `Request failed (${res.status})`;
+        throw new Error(msg);
+    }
+
+    if (res.status === 204) return undefined as TResponse;
+    if (res.headers.get("content-type")?.includes("application/json")) {
+        return (await res.json()) as TResponse;
+    }
+    return undefined as TResponse;
+}
