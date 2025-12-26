@@ -17,7 +17,14 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private Role role = Role.USER;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "psychologist_id", foreignKey = @ForeignKey(name = "fk_user_psychologist"))
+    private User psychologist;
+
+    public User getPsychologist() { return psychologist; }
+    public void setPsychologist(User psychologist) { this.psychologist = psychologist; }
 
     protected User() {
     }
