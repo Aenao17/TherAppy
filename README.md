@@ -3,7 +3,7 @@
 ## ▶ How to run
 
 1. Clone the repository
-2. Install Docker Desktop
+2. Install Docker Desktop (https://docs.docker.com/get-started/get-docker)
 3. Run the following command in Backend folder to build and start the database:
     ```bash
     docker-compose up -d
