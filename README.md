@@ -15,7 +15,7 @@
     ```
    
 5. Run npm install in the Frontend folder to install dependencies. Make sure you have ionic framework installed: https://ionicframework.com/docs/intro/cli
-6. Run the following command to start the frontend:
+6. Run the following command in the Frontend folder to start the frontend:
     ```bash
     ionic serve
     ```
