@@ -134,38 +134,6 @@ const Home: React.FC = () => {
         }
     };
 
-    const approveRequest = async (id: number) => {
-        setIsLoading(true);
-        try {
-            await postJsonAuth<void>(`/api/onboarding/${id}/approve`, {});
-            setSuccessMessage("Request approved.");
-            setShowSuccess(true);
-            await loadInbox();
-        } catch (e) {
-            const msg = e instanceof Error ? e.message : "Approve failed";
-            setErrorMessage(msg);
-            setShowError(true);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const rejectRequest = async (id: number) => {
-        setIsLoading(true);
-        try {
-            await postJsonAuth<void>(`/api/onboarding/${id}/reject`, {});
-            setSuccessMessage("Request rejected.");
-            setShowSuccess(true);
-            await loadInbox();
-        } catch (e) {
-            const msg = e instanceof Error ? e.message : "Reject failed";
-            setErrorMessage(msg);
-            setShowError(true);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     const handleLogout = () => {
         clearTokens();
         router.push("/login", "root");
