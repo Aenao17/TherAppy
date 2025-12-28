@@ -15,6 +15,20 @@ export function getRole(): AppRole | null {
     return null;
 }
 
+export function getUsername(): string | null {
+    const token = getAccessToken();
+    if (!token) return null;
+
+    const payload = parseJwt(token);
+    const username = payload?.sub;
+
+    if (typeof username === "string") {
+        return username;
+    }
+    return null;
+}
+
+
 
 export function parseJwt(token: string): any | null {
     try {

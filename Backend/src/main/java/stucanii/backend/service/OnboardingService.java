@@ -7,6 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 import stucanii.backend.domain.*;
 import stucanii.backend.repository.OnboardingRequestRepository;
 import stucanii.backend.repository.UserRepository;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.List;
 
