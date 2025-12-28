@@ -1,0 +1,6 @@
+@media (min-width: 900px) {
+    .client-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+    }
+}

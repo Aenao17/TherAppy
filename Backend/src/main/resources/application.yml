@@ -12,11 +12,12 @@ spring:
         format_sql: true
 
 app:
+  crypto:
+    aesKeyBase64: "0123456789abcdefghij0123456789VaPupaHantuTP"
   jwt:
     secret: "TudorPopaAFostAici!VaPupaHantu!StucaniiStudios,PoweredByTheBoysStudios"
     ttlSeconds: 900
   refresh:
     ttlSeconds: 1209600
-
 server:
   port: 8080
