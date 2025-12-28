@@ -20,6 +20,8 @@ import { useEffect, useState } from "react";
 import { getJsonAuth, postJsonAuth } from "../api/api";
 import { getRole } from "../auth/jwt";
 import { useIonRouter } from "@ionic/react";
+import PsychologistToolbar from "../components/PsychologistToolbar";
+import {clearTokens} from "../auth/authStorage";
 
 type InboxItem = {
     id: number; // Integer in backend
@@ -43,6 +45,8 @@ const Inbox: React.FC = () => {
 
     const [errorMessage, setErrorMessage] = useState("");
     const [showError, setShowError] = useState(false);
+
+    const [inboxCount, setInboxCount] = useState(0);
 
     const [successMessage, setSuccessMessage] = useState("");
     const [showSuccess, setShowSuccess] = useState(false);
@@ -106,12 +110,39 @@ const Inbox: React.FC = () => {
         }
     };
 
+    type InboxResponse2 = { requests: { id: number }[] };
+    const refreshInboxCount = async () => {
+        const resp = await getJsonAuth<InboxResponse2>("/api/onboarding/inbox");
+        setInboxCount(resp.requests.length);
+    };
+
+    const handleLogout = () => {
+        clearTokens();
+        router.push("/login", "root");
+    };
+
+    useEffect(() => {
+        // fetch inbox count
+        (async () => {
+
+            try {
+                await refreshInboxCount();
+            } catch {
+                // nu blocăm UX-ul dacă count-ul pică
+                setInboxCount(0);
+            }
+        })();
+    }, []);
+
     return (
         <IonPage>
             <IonHeader>
-                <IonToolbar>
-                    <IonTitle>Inbox</IonTitle>
-                </IonToolbar>
+                <PsychologistToolbar
+                    title="Home"
+                    inboxCount={inboxCount}
+                    onOpenInbox={() => router.push("/inbox", "forward")}
+                    onLogout={handleLogout}
+                />
             </IonHeader>
 
             <IonContent className="ion-padding">

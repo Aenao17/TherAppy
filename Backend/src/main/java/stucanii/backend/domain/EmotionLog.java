@@ -24,12 +24,11 @@ public class EmotionLog {
     private Instant createdAt = Instant.now();
 
     // AES-GCM IV (12 bytes)
-    @Column(name = "iv", nullable = false)
+    @Column(name = "iv", nullable = false, columnDefinition = "bytea")
     private byte[] iv;
 
     // ciphertext (includes GCM tag at the end, in Java implementation)
-    @Lob
-    @Column(name = "ciphertext", nullable = false)
+    @Column(name = "ciphertext", nullable = false, columnDefinition = "bytea")
     private byte[] ciphertext;
 
     protected EmotionLog() {}

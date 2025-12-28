@@ -1,4 +1,4 @@
-import "./Home.css";
+import "./css/Home.css";
 import {
     IonButton, IonButtons,
     IonCard,
@@ -33,6 +33,7 @@ import { useIonViewWillEnter } from "@ionic/react";
 import EmotionLogWidget from "../components/EmotionLogWidget";
 import MoodThermometerWidget from "../components/MoodThermometerWidget";
 import PsychologistClientsWidget from "../components/PsychologistClientsWidget";
+import PsychologistToolbar from "../components/PsychologistToolbar";
 
 const Home: React.FC = () => {
     const router = useIonRouter();
@@ -146,40 +147,25 @@ const Home: React.FC = () => {
     return (
         <IonPage>
             <IonHeader>
-                <IonToolbar>
-                    <IonTitle>Home</IonTitle>
-
-                    {(role === "ADMIN" || role === "PSYCHOLOGIST") && (
-                        <IonButton
-                            slot="end"
-                            fill="clear"
-                            onClick={() => router.push("/inbox", "forward")}
-                            style={{ position: "relative" }}
-                        >
-                            <IonIcon icon={mailUnreadOutline} />
-
-                            {inboxCount > 0 && (
-                                <IonBadge
-                                    style={{
-                                        position: "absolute",
-                                        top: "2px",
-                                        right: "2px",
-                                        fontSize: "10px",
-                                        padding: "2px 6px",
-                                        borderRadius: "999px",
-                                    }}
-                                >
-                                    {inboxCount > 99 ? "99+" : inboxCount}
-                                </IonBadge>
-                            )}
-                        </IonButton>
-                    )}
-
-                    <IonButton slot="end" fill="clear" onClick={handleLogout}>
-                        Logout
-                    </IonButton>
-                </IonToolbar>
+                {(role === "ADMIN" || role === "PSYCHOLOGIST") ? (
+                    <PsychologistToolbar
+                        title="Home"
+                        inboxCount={inboxCount}
+                        onOpenInbox={() => router.push("/inbox", "forward")}
+                        onLogout={handleLogout}
+                    />
+                ) : (
+                    <IonToolbar>
+                        <IonTitle>Home</IonTitle>
+                        <IonButtons slot="end">
+                            <IonButton fill="clear" onClick={handleLogout}>
+                                Logout
+                            </IonButton>
+                        </IonButtons>
+                    </IonToolbar>
+                )}
             </IonHeader>
+
 
             <IonContent className="ion-padding">
                 <IonCard>
