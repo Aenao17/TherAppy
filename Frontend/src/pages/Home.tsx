@@ -31,9 +31,7 @@ import { mailUnreadOutline } from "ionicons/icons";
 import { useIonViewWillEnter } from "@ionic/react";
 
 import EmotionLogWidget from "../components/EmotionLogWidget";
-
-
-
+import MoodThermometerWidget from "../components/MoodThermometerWidget";
 
 const Home: React.FC = () => {
     const router = useIonRouter();
@@ -247,29 +245,9 @@ const Home: React.FC = () => {
                 )}
 
                 {role === "CLIENT" && (
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr",
-                            gap: 12,
-                        }}
-                    >
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }} className="client-grid">
-                            <div>
-                                <EmotionLogWidget />
-                            </div>
-
-                            <div>
-                                <IonCard>
-                                    <IonCardHeader>
-                                        <IonCardTitle>Next widget</IonCardTitle>
-                                    </IonCardHeader>
-                                    <IonCardContent>
-                                        Functionalitatea 2 va apărea aici.
-                                    </IonCardContent>
-                                </IonCard>
-                            </div>
-                        </div>
+                    <div className="client-grid">
+                        <EmotionLogWidget />
+                        <MoodThermometerWidget />
                     </div>
                 )}
 
