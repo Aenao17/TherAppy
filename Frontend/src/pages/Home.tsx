@@ -23,6 +23,8 @@ import {
     IonNote,
     IonToast,
 } from "@ionic/react";
+import { usePanicSocket, PanicEvent } from "../hooks/usePanicSocket";
+
 import { useEffect, useState } from "react";
 import { getJsonAuth, postJsonAuth } from "../api/api";
 import {clearTokens} from "../auth/authStorage";
@@ -34,6 +36,11 @@ import EmotionLogWidget from "../components/EmotionLogWidget";
 import MoodThermometerWidget from "../components/MoodThermometerWidget";
 import PsychologistClientsWidget from "../components/PsychologistClientsWidget";
 import PsychologistToolbar from "../components/PsychologistToolbar";
+import PanicButton from "../components/PanicButton";
+
+import PanicAlarmOverlay from "../components/PanicAlarmOverlay";
+import { getUsername } from "../auth/jwt"; // dacă ai, altfel îți zic mai jos
+
 
 const Home: React.FC = () => {
     const router = useIonRouter();
@@ -59,6 +66,8 @@ const Home: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState(false);
 
     const [inbox, setInbox] = useState<InboxItem[]>([]);
+    const [panicEvent, setPanicEvent] = useState<PanicEvent | null>(null);
+
 
     const [inboxCount, setInboxCount] = useState(0);
 
@@ -93,6 +102,15 @@ const Home: React.FC = () => {
             }
         })();
     }, [role]);
+
+    usePanicSocket(
+        role === "PSYCHOLOGIST" ? getUsername() : null,
+        (event) => {
+            setPanicEvent(event);
+        }
+    );
+
+
 
     const requestClient = async () => {
         const t = psychologistUsername.trim();
@@ -284,7 +302,30 @@ const Home: React.FC = () => {
                     duration={2000}
                     onDidDismiss={() => setShowSuccess(false)}
                 />
+
+                <IonToast
+                    isOpen={!!panicEvent}
+                    message={
+                        panicEvent
+                            ? `🚨 PANIC ALERT from @${panicEvent.clientUsername}`
+                            : ""
+                    }
+                    duration={0}
+                    buttons={[
+                        {
+                            text: "Acknowledge",
+                            handler: () => {
+                                // aici mai târziu apelăm /ack
+                                setPanicEvent(null);
+                            },
+                        },
+                    ]}
+                    color="danger"
+                />
             </IonContent>
+            <PanicButton enabled={role==="CLIENT"} />
+            <PanicAlarmOverlay event={panicEvent} onClose={() => setPanicEvent(null)} />
+
         </IonPage>
     );
 };

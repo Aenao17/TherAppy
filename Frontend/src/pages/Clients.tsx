@@ -17,6 +17,8 @@ import {
 } from "@ionic/react";
 import { useEffect, useMemo, useState } from "react";
 import { getMyClients, PsychClient } from "../api/psychologistClients";
+import PanicButton from "../components/PanicButton";
+
 
 import PrivacyGate from "../components/PrivacyGate";
 import ClientEmotionLogsWidget from "../components/ClientEmotionLogsWidget";
@@ -145,7 +147,7 @@ const Clients: React.FC = () => {
                             <h2>@{selected.username}</h2>
 
                             <PrivacyGate minutes={15}>
-                                <div className="profile-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
+                                <div className="profile-grid">
                                     <ClientMoodChartWidget clientId={selected.id} />
                                     <ClientEmotionLogsWidget clientId={selected.id} />
                                 </div>

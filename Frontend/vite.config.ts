@@ -14,5 +14,15 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
-  }
+  },
+  define: {
+    global: "globalThis",
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: "globalThis",
+      },
+    },
+  },
 })
