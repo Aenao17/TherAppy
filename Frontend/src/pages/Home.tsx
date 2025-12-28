@@ -32,6 +32,7 @@ import { useIonViewWillEnter } from "@ionic/react";
 
 import EmotionLogWidget from "../components/EmotionLogWidget";
 import MoodThermometerWidget from "../components/MoodThermometerWidget";
+import PsychologistClientsWidget from "../components/PsychologistClientsWidget";
 
 const Home: React.FC = () => {
     const router = useIonRouter();
@@ -252,23 +253,9 @@ const Home: React.FC = () => {
                 )}
 
                 {role === "PSYCHOLOGIST" && (
-                    <IonCard>
-                        <IonCardHeader>
-                            <IonCardTitle>Psychologist area</IonCardTitle>
-                        </IonCardHeader>
-                        <IonCardContent>
-                            <IonButton
-                                expand="block"
-                                onClick={() => router.push("/inbox", "forward")}
-                                disabled={isLoading}
-                            >
-                                Open Inbox
-                                {/* optional badge:
-              {inboxCount > 0 && <IonBadge style={{ marginLeft: 8 }}>{inboxCount}</IonBadge>}
-              */}
-                            </IonButton>
-                        </IonCardContent>
-                    </IonCard>
+                    <>
+                        <PsychologistClientsWidget />
+                    </>
                 )}
 
                 {role === "ADMIN" && (

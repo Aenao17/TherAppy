@@ -7,9 +7,7 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./auth/AdminRoute";
 import Inbox from "./pages/Inbox";
-
-
-
+import Clients from "./pages/Clients";
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -50,6 +48,7 @@ const App: React.FC = () => (
       <IonRouterOutlet>
         <ProtectedRoute exact path="/home" component={Home} />
         <ProtectedRoute exact path="/inbox" component={Inbox} />
+        <ProtectedRoute exact path="/clients" component={Clients} />
         <Route exact path="/">
           <Redirect to="/login" />
         </Route>
