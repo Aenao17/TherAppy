@@ -1,3 +1,4 @@
+import "./Home.css";
 import {
     IonButton, IonButtons,
     IonCard,
@@ -28,6 +29,9 @@ import {clearTokens} from "../auth/authStorage";
 import { IonBadge, IonIcon } from "@ionic/react";
 import { mailUnreadOutline } from "ionicons/icons";
 import { useIonViewWillEnter } from "@ionic/react";
+
+import EmotionLogWidget from "../components/EmotionLogWidget";
+
 
 
 
@@ -243,12 +247,30 @@ const Home: React.FC = () => {
                 )}
 
                 {role === "CLIENT" && (
-                    <IonCard>
-                        <IonCardHeader>
-                            <IonCardTitle>Client area</IonCardTitle>
-                        </IonCardHeader>
-                        <IonCardContent>Client home page (coming next).</IonCardContent>
-                    </IonCard>
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr",
+                            gap: 12,
+                        }}
+                    >
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }} className="client-grid">
+                            <div>
+                                <EmotionLogWidget />
+                            </div>
+
+                            <div>
+                                <IonCard>
+                                    <IonCardHeader>
+                                        <IonCardTitle>Next widget</IonCardTitle>
+                                    </IonCardHeader>
+                                    <IonCardContent>
+                                        Functionalitatea 2 va apărea aici.
+                                    </IonCardContent>
+                                </IonCard>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
                 {role === "PSYCHOLOGIST" && (
