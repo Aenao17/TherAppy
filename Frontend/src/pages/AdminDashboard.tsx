@@ -4,16 +4,17 @@ import {
     IonCardHeader,
     IonCardTitle,
     IonContent,
-    IonHeader,
+    IonHeader, IonIcon,
     IonPage,
     IonTitle,
-    IonToolbar,
+    IonToolbar, useIonRouter,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { IonLoading, IonToast } from "@ionic/react";
 import { IonItem, IonLabel, IonList, IonNote } from "@ionic/react";
 import { IonButton, IonButtons, IonAlert } from "@ionic/react";
 import { patchJsonAuth, deleteAuth, getJsonAuth } from "../api/api";
+import {homeOutline} from "ionicons/icons";
 
 
 const AdminDashboard: React.FC = () => {
@@ -32,6 +33,7 @@ const AdminDashboard: React.FC = () => {
         users: AdminUserItem[];
     };
 
+    const router = useIonRouter();
 
     const [stats, setStats] = useState<AdminStatsResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -102,7 +104,13 @@ const AdminDashboard: React.FC = () => {
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>Admin Dashboard</IonTitle>
+                    <IonTitle slot="start">Admin Dashboard</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton onClick={() => router.push("/home", "root")} title="Home" aria-label="Home">
+                            <IonIcon icon={homeOutline} />
+                        </IonButton>
+
+                    </IonButtons>
                 </IonToolbar>
             </IonHeader>
 
