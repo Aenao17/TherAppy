@@ -8,7 +8,7 @@ import {
     IonPage,
     IonTitle,
     IonToolbar,
-    IonToast,
+    IonToast, useIonRouter,
 } from "@ionic/react";
 import { useState } from "react";
 import { IonLoading } from "@ionic/react";
@@ -21,6 +21,7 @@ type UserResponse = {
 };
 
 const Signup: React.FC = () => {
+    const router = useIonRouter();
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -61,6 +62,7 @@ const Signup: React.FC = () => {
             // reset form (opțional)
             setPassword("");
             setConfirmPassword("");
+            router.push("/login", "root");
         } catch (e) {
             const msg = e instanceof Error ? e.message : "Signup failed";
             setErrorMessage(msg);
@@ -110,6 +112,9 @@ const Signup: React.FC = () => {
 
                 <IonButton expand="block" className="ion-margin-top" onClick={onSubmit}>
                     Create account
+                </IonButton>
+                <IonButton expand="block" fill="clear" routerLink="/login">
+                    Already have an account? Log in here!
                 </IonButton>
             </IonContent>
 
