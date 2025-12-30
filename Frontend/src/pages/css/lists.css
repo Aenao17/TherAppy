@@ -1,0 +1,13 @@
+/* lists.css */
+.list-item-title {
+  font-weight: 600;
+}
+
+.list-item-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+ion-item.selected {
+  --background: #eef2ff;
+}

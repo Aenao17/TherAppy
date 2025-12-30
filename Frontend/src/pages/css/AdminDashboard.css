@@ -1,0 +1,260 @@
+@import "./base.css";
+@import "./layout.css";
+@import "./cards.css";
+@import "./lists.css";
+@import "./utilities.css";
+
+/* Page shell */
+.admin-page {
+    --background: transparent;
+}
+
+.admin-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 22px 16px 40px;
+}
+
+/* Header */
+.admin-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.admin-title {
+    margin: 0;
+    font-size: 26px;
+    letter-spacing: -0.02em;
+}
+
+.admin-subtitle {
+    margin: 6px 0 0;
+    opacity: 0.72;
+}
+
+.admin-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(139, 126, 255, 0.25);
+    background: rgba(139, 126, 255, 0.08);
+}
+
+.admin-pill-label {
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+.admin-pill-value {
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+}
+
+/* Grid cards */
+.admin-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+@media (min-width: 980px) {
+    .admin-grid {
+        grid-template-columns: 360px 1fr;
+        align-items: start;
+    }
+}
+
+.admin-card {
+    border-radius: 18px;
+}
+
+.admin-card--wide {
+    min-width: 0;
+}
+
+/* Overview */
+.admin-overview {
+    display: grid;
+    gap: 12px;
+}
+
+.admin-metric {
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.admin-metric-label {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+}
+
+.admin-metric-value {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+}
+
+.admin-hint {
+    font-size: 13px;
+    opacity: 0.75;
+}
+
+/* List */
+.admin-list {
+    display: grid;
+    gap: 10px;
+}
+
+/* Each row card-ish */
+.admin-row {
+    --padding-start: 0px;
+    --inner-padding-end: 0px;
+    --min-height: 0px;
+    border-radius: 16px;
+    border: 1px solid rgba(139, 126, 255, 0.18);
+    background: rgba(255, 255, 255, 0.65);
+    overflow: hidden;
+}
+
+/* Remove Ionic default item divider look */
+.admin-row::part(native) {
+    padding: 12px;
+    background: transparent;
+}
+
+/* ✅ The responsive grid that fixes everything */
+.admin-row-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+/* Desktop layout: info | role | actions */
+@media (min-width: 720px) {
+    .admin-row-grid {
+        grid-template-columns: 1fr auto auto;
+        align-items: center;
+        gap: 12px;
+    }
+}
+
+/* Left info */
+.admin-row-info {
+    min-width: 0;
+}
+
+.admin-username {
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-meta {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 2px;
+}
+
+/* Role badge container */
+.admin-row-role {
+    display: flex;
+    justify-content: flex-start;
+}
+
+@media (min-width: 720px) {
+    .admin-row-role {
+        justify-content: flex-end;
+    }
+}
+
+/* Actions */
+.admin-row-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+@media (min-width: 720px) {
+    .admin-row-actions {
+        grid-template-columns: auto auto;
+    }
+}
+
+/* Buttons (lavender theme) */
+.secondary-button {
+    --background: rgba(139, 126, 255, 0.12);
+    --color: rgba(35, 30, 60, 0.95);
+    --border-color: rgba(139, 126, 255, 0.35);
+    --border-width: 1px;
+    --border-style: solid;
+    --box-shadow: none;
+    height: 44px;
+    font-weight: 800;
+    border-radius: 14px;
+}
+
+.danger-button {
+    --background: rgba(255, 70, 120, 0.12);
+    --color: rgba(120, 0, 35, 0.95);
+    --border-color: rgba(255, 70, 120, 0.35);
+    --border-width: 1px;
+    --border-style: solid;
+    --box-shadow: none;
+    height: 44px;
+    font-weight: 900;
+    border-radius: 14px;
+}
+
+/* Role badges */
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    border: 1px solid rgba(139, 126, 255, 0.25);
+    background: rgba(139, 126, 255, 0.10);
+    color: rgba(40, 32, 70, 0.92);
+    white-space: nowrap;
+}
+
+.role-admin {
+    border-color: rgba(139, 126, 255, 0.32);
+    background: rgba(139, 126, 255, 0.12);
+}
+
+.role-psychologist {
+    border-color: rgba(139, 126, 255, 0.22);
+    background: rgba(139, 126, 255, 0.08);
+}
+
+.role-client {
+    border-color: rgba(139, 126, 255, 0.22);
+    background: rgba(139, 126, 255, 0.07);
+}
+
+.role-user {
+    border-color: rgba(139, 126, 255, 0.18);
+    background: rgba(139, 126, 255, 0.06);
+}
+
+/* Empty */
+.admin-empty {
+    opacity: 0.7;
+    padding: 10px 2px;
+}

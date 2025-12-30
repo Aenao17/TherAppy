@@ -16,11 +16,16 @@ import { postJson } from "../api/api";
 import { setTokens } from "../auth/authStorage";
 import { useIonRouter } from "@ionic/react";
 
+import "./css/base.css";
+import "./css/layout.css";
+import "./css/forms.css";
+import "./css/cards.css";
+import "./css/Auth.css";
 
 type AuthResponse = {
     accessToken: string;
     refreshToken: string;
-    tokenType: string; // "Bearer"
+    tokenType: string;
 };
 
 const Login: React.FC = () => {
@@ -28,7 +33,6 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState("");
 
     const [isLoading, setIsLoading] = useState(false);
-
     const [errorMessage, setErrorMessage] = useState("");
     const [showError, setShowError] = useState(false);
 
@@ -58,8 +62,6 @@ const Login: React.FC = () => {
 
             setTokens(resp.accessToken, resp.refreshToken);
             router.push("/home", "root");
-
-            // (Pasul următor) aici vom face redirect către o pagină protejată
         } catch (e) {
             const msg = e instanceof Error ? e.message : "Login failed";
             setErrorMessage(msg);
@@ -77,29 +79,60 @@ const Login: React.FC = () => {
                 </IonToolbar>
             </IonHeader>
 
-            <IonContent className="ion-padding">
-                <IonItem>
-                    <IonLabel position="stacked">Username</IonLabel>
-                    <IonInput
-                        value={username}
-                        onIonInput={(e) => setUsername(e.detail.value ?? "")}
-                        autocomplete="username"
-                    />
-                </IonItem>
+            <IonContent className="auth-page">
+                <div className="auth-shell">
+                    {/* Decor subtil / “special” */}
+                    <div className="auth-orb auth-orb--a" />
+                    <div className="auth-orb auth-orb--b" />
 
-                <IonItem>
-                    <IonLabel position="stacked">Password</IonLabel>
-                    <IonInput
-                        value={password}
-                        type="password"
-                        onIonInput={(e) => setPassword(e.detail.value ?? "")}
-                        autocomplete="current-password"
-                    />
-                </IonItem>
+                    <div className="auth-card auth-card--premium">
+                        <div className="auth-hero">
+                            <div className="auth-badge">TherAppy</div>
+                            <h2 className="auth-title">Welcome back</h2>
+                            <p className="auth-subtitle">Log in to continue</p>
+                        </div>
 
-                <IonButton expand="block" className="ion-margin-top" onClick={onSubmit}>
-                    Log in
-                </IonButton>
+                        <div className="form-group">
+                            <IonItem lines="none" className="form-item form-item--premium">
+                                <IonLabel position="stacked" className="form-label">
+                                    Username
+                                </IonLabel>
+                                <IonInput
+                                    value={username}
+                                    placeholder="Enter your username"
+                                    onIonInput={(e) => setUsername(e.detail.value ?? "")}
+                                    autocomplete="username"
+                                    className="form-input"
+                                />
+                            </IonItem>
+
+                            <IonItem lines="none" className="form-item form-item--premium">
+                                <IonLabel position="stacked" className="form-label">
+                                    Password
+                                </IonLabel>
+                                <IonInput
+                                    value={password}
+                                    type="password"
+                                    placeholder="Enter your password"
+                                    onIonInput={(e) => setPassword(e.detail.value ?? "")}
+                                    autocomplete="current-password"
+                                    className="form-input"
+                                />
+                            </IonItem>
+                        </div>
+
+                        <div className="auth-actions">
+                            <IonButton
+                                expand="block"
+                                className="primary-button primary-button--lavender"
+                                onClick={onSubmit}
+                                disabled={isLoading}
+                            >
+                                Log in
+                            </IonButton>
+                        </div>
+                    </div>
+                </div>
 
                 <IonLoading isOpen={isLoading} message="Logging in..." />
 

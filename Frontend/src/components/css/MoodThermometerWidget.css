@@ -1,0 +1,198 @@
+/* card */
+.mood-card {
+    border-radius: 18px;
+}
+
+/* subtitle */
+.mood-subtitle {
+    margin-bottom: 12px;
+    opacity: 0.8;
+}
+
+/* panel interior */
+.mood-panel {
+    width: 100%;
+    min-width: 0;
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid rgba(139, 126, 255, 0.18);
+    background: rgba(255, 255, 255, 0.65);
+    overflow: hidden;
+}
+
+/* scale labels */
+.mood-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 8px;
+}
+
+.mood-scale-left,
+.mood-scale-right {
+    white-space: nowrap;
+}
+
+/* wrapper range */
+.mood-range-wrap {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    padding: 2px 4px;
+    border-radius: 14px;
+}
+
+/* ✅ IonRange: gradient pe bară, lavender pe knob */
+.mood-range {
+    width: 100%;
+    min-width: 0;
+
+    --bar-height: 8px;
+    --knob-size: 22px;
+
+    /* knob lavender */
+    --knob-background: rgba(139, 126, 255, 1);
+    --pin-background: rgba(139, 126, 255, 1);
+    --pin-color: #fff;
+
+    /* IMPORTANT: nu folosim lavender pe bară */
+    --bar-background: transparent;
+    --bar-background-active: transparent;
+}
+
+/* ✅ gradient pe track (bară) */
+.mood-range::part(bar) {
+    background: linear-gradient(90deg, #ef4444 0%, #f59e0b 45%, #22c55e 100%);
+    border-radius: 999px;
+    opacity: 0.95;
+}
+
+/* (unele versiuni Ionic folosesc bar-active separat) */
+.mood-range::part(bar-active) {
+    background: linear-gradient(90deg, #ef4444 0%, #f59e0b 45%, #22c55e 100%);
+    border-radius: 999px;
+    opacity: 0.95;
+}
+
+/* knob shadow subtil */
+.mood-range::part(knob) {
+    box-shadow: 0 10px 22px rgba(139, 126, 255, 0.25);
+}
+
+/* value row */
+.mood-value {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.mood-emoji {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.mood-text {
+    font-weight: 700;
+    opacity: 0.85;
+}
+
+/* buttons */
+.mood-buttons {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+}
+
+.mood-chip {
+    height: 56px;
+    border-radius: 16px;
+    border: 1px solid rgba(139, 126, 255, 0.22);
+    background: rgba(139, 126, 255, 0.06);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 0 18px;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.mood-chip.is-active {
+    background: rgba(139, 126, 255, 0.72);
+    border-color: rgba(139, 126, 255, 0.55);
+    box-shadow: 0 10px 24px rgba(139, 126, 255, 0.22);
+}
+
+.mood-chip-emoji {
+    font-size: 18px;
+}
+
+.mood-chip-num {
+    font-weight: 900;
+    color: rgba(30, 24, 50, 0.92);
+}
+
+.mood-chip.is-active .mood-chip-num,
+.mood-chip.is-active .mood-chip-emoji {
+    color: #fff;
+}
+
+/* last saved */
+.mood-last {
+    margin-top: 10px;
+}
+
+.mood-muted {
+    opacity: 0.7;
+}
+
+/* iPhone SE / very small phones */
+@media (max-width: 320px) {
+    .mood-panel {
+        padding: 12px; /* mai mic, câștigi spațiu */
+    }
+
+    .mood-buttons {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .mood-chip {
+        width: 100%;
+        min-width: 0;
+        height: 52px;          /* tap target bun */
+        padding: 6px 2px;
+        border-radius: 14px;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column; /* ✅ asta rezolvă “strâmb”-ul */
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+    }
+
+    .mood-chip-emoji {
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .mood-chip-num {
+        font-size: 12px;
+        font-weight: 900;
+        line-height: 1;
+    }
+}
+
+
+
+
+

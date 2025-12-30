@@ -1,0 +1,216 @@
+/* =========================
+   AUTH PAGE - PREMIUM CALM
+   Lavender / Beige / Light Blue
+   ========================= */
+
+.auth-page {
+    --bg1: #f7f6fb;
+    --bg2: #eef1ff;
+    --lav: #7b6cf2;
+    --lav2: #9a8bff;
+    --ink: #1f2330;
+    --muted: rgba(31, 35, 48, 0.65);
+
+    background: radial-gradient(1200px 700px at 20% 10%, var(--bg2), transparent 60%),
+    radial-gradient(900px 600px at 85% 40%, #f3efff, transparent 55%),
+    linear-gradient(180deg, var(--bg1), #ffffff);
+}
+
+.auth-shell {
+    min-height: calc(100vh - 56px); /* minus header */
+    display: grid;
+    place-items: center;
+    padding: 28px 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* decor: două “orb-uri” blur pentru vibe premium */
+.auth-orb {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(30px);
+    opacity: 0.7;
+    pointer-events: none;
+    transform: translateZ(0);
+}
+
+.auth-orb--a {
+    width: 380px;
+    height: 380px;
+    left: -120px;
+    top: -140px;
+    background: radial-gradient(circle at 30% 30%, rgba(123, 108, 242, 0.35), rgba(123, 108, 242, 0));
+}
+
+.auth-orb--b {
+    width: 420px;
+    height: 420px;
+    right: -160px;
+    bottom: -180px;
+    background: radial-gradient(circle at 30% 30%, rgba(154, 139, 255, 0.30), rgba(154, 139, 255, 0));
+}
+
+/* card premium: border subtle + shadow soft + accent ring */
+.auth-card--premium {
+    width: min(520px, 92vw);
+    border-radius: 22px;
+    padding: 28px 26px 22px;
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(123, 108, 242, 0.15);
+    box-shadow:
+            0 18px 60px rgba(31, 35, 48, 0.08),
+            0 2px 10px rgba(31, 35, 48, 0.06);
+    position: relative;
+}
+
+.auth-card--premium::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 22px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(123, 108, 242, 0.30), rgba(255, 255, 255, 0.0) 55%);
+    -webkit-mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+/* HERO */
+.auth-hero {
+    margin-bottom: 18px;
+}
+
+.auth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: rgba(123, 108, 242, 0.95);
+    background: rgba(123, 108, 242, 0.10);
+    border: 1px solid rgba(123, 108, 242, 0.18);
+    margin-bottom: 12px;
+}
+
+.auth-title {
+    margin: 0;
+    font-size: 34px;
+    line-height: 1.15;
+    color: var(--ink);
+    letter-spacing: -0.6px;
+}
+
+.auth-subtitle {
+    margin: 10px 0 0;
+    font-size: 15px;
+    color: var(--muted);
+}
+
+/* FORM */
+.form-group {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+/* IonItem wrapper - facem “input card” */
+.form-item--premium {
+    --background: transparent;
+    --inner-padding-end: 0;
+    --inner-padding-start: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+    --min-height: auto;
+}
+
+/* label stacked */
+.form-label {
+    font-weight: 700;
+    color: rgba(31, 35, 48, 0.78);
+    margin-bottom: 8px;
+    letter-spacing: 0.2px;
+}
+
+/* IonInput: border clar + focus ring */
+.form-input {
+    width: 100%;
+    border-radius: 14px;
+    border: 1.5px solid rgba(123, 108, 242, 0.22);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px 12px;
+    font-size: 15px;
+    color: var(--ink);
+    box-shadow: 0 1px 0 rgba(31, 35, 48, 0.03);
+}
+
+/* placeholder */
+.form-input::part(native) {
+    padding: 0;
+}
+
+ion-input.form-input {
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+    margin-top: 10px;
+}
+
+/* focus – pe web uneori vine pe IonItem, alteori pe input, acoperim ambele */
+.form-item--premium.item-has-focus .form-input,
+.form-input:focus,
+.form-input:focus-within {
+    border-color: rgba(123, 108, 242, 0.55);
+    box-shadow:
+            0 0 0 4px rgba(123, 108, 242, 0.14),
+            0 10px 30px rgba(123, 108, 242, 0.10);
+}
+
+/* ACTIONS */
+.auth-actions {
+    margin-top: 18px;
+}
+
+/* Button lavender */
+.primary-button--lavender {
+    --background: linear-gradient(135deg, #7b6cf2, #9a8bff);
+    --background-activated: #6f62e6;
+    --background-hover: #7568ef;
+    --color: #fff;
+    --border-radius: 14px;
+    height: 48px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    box-shadow: 0 14px 35px rgba(123, 108, 242, 0.28);
+}
+
+.primary-button--lavender::part(native) {
+    border-radius: 14px;
+}
+
+/* hint text */
+.auth-hint {
+    margin-top: 12px;
+    font-size: 13px;
+    color: rgba(31, 35, 48, 0.55);
+    text-align: center;
+}
+
+/* responsive */
+@media (max-width: 420px) {
+    .auth-card--premium {
+        padding: 22px 18px 18px;
+        border-radius: 18px;
+    }
+    .auth-title {
+        font-size: 28px;
+    }
+}
