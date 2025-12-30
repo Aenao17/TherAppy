@@ -11,6 +11,12 @@ spring:
       hibernate:
         format_sql: true
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 app:
   crypto:
     aesKeyBase64: "0123456789abcdefghij0123456789VaPupaHantuTP"
@@ -19,5 +25,8 @@ app:
     ttlSeconds: 900
   refresh:
     ttlSeconds: 1209600
+
 server:
   port: 8080
+  tomcat:
+    max-swallow-size: 10MB

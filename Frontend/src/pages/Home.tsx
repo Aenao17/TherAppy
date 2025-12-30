@@ -41,6 +41,8 @@ import PsychologistToolbar from "../components/PsychologistToolbar";
 import PanicButton from "../components/PanicButton";
 import PanicAlarmOverlay from "../components/PanicAlarmOverlay";
 import { usePanicSocket, PanicEvent } from "../hooks/usePanicSocket";
+import ClientMaterialsWidget from "../components/ClientMaterialsWidget";
+
 
 const Home: React.FC = () => {
     const router = useIonRouter();
@@ -273,6 +275,7 @@ const Home: React.FC = () => {
                                 <div className="client-grid">
                                     <EmotionLogWidget />
                                     <MoodThermometerWidget />
+                                    <ClientMaterialsWidget />
                                 </div>
                             </IonCardContent>
                         </IonCard>
