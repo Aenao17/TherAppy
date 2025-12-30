@@ -7,6 +7,7 @@ export type PanicEvent = {
     clientUsername: string;
     triggeredByLongPress: boolean;
     createdAt: string;
+    videoRoomId: string;
 };
 
 export function usePanicSocket(

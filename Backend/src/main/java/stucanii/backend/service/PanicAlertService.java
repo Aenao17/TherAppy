@@ -31,7 +31,7 @@ public class PanicAlertService {
 
 
     @Transactional
-    public Integer trigger(String clientUsername, boolean longPress) {
+    public PanicAlert trigger(String clientUsername, boolean longPress) {
         User client = userRepository.findByUsername(clientUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
@@ -53,11 +53,12 @@ public class PanicAlertService {
                         alert.getId(),
                         client.getUsername(),
                         longPress,
-                        alert.getCreatedAt()
+                        alert.getCreatedAt(),
+                        alert.getVideoRoomId()
                 )
         );
 
-        return alert.getId();
+        return alert;
 
     }
 

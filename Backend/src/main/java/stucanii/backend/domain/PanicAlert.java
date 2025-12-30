@@ -2,6 +2,7 @@ package stucanii.backend.domain;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "panic_alerts")
@@ -33,12 +34,16 @@ public class PanicAlert {
     @Column(nullable = false)
     private boolean triggeredByLongPress;
 
+    @Column(nullable = false)
+    private String videoRoomId;
+
     protected PanicAlert() {}
 
     public PanicAlert(User client, User psychologist, boolean triggeredByLongPress) {
         this.client = client;
         this.psychologist = psychologist;
         this.triggeredByLongPress = triggeredByLongPress;
+        this.videoRoomId = UUID.randomUUID().toString();
     }
 
     public Integer getId() { return id; }
@@ -48,6 +53,7 @@ public class PanicAlert {
     public Instant getCreatedAt() { return createdAt; }
     public Instant getAcknowledgedAt() { return acknowledgedAt; }
     public boolean isTriggeredByLongPress() { return triggeredByLongPress; }
+    public String getVideoRoomId() { return videoRoomId; }
 
     public void acknowledge() {
         this.status = PanicStatus.ACKNOWLEDGED;

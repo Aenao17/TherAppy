@@ -20,7 +20,7 @@ public class PanicAlertController {
     }
 
     public record TriggerRequest(boolean longPress) {}
-    public record TriggerResponse(Integer id) {}
+    public record TriggerResponse(Integer id, String videoRoomId) {}
 
     public record PanicAlertItem(
             Integer id,
@@ -28,7 +28,8 @@ public class PanicAlertController {
             String status,
             boolean triggeredByLongPress,
             Instant createdAt,
-            Instant acknowledgedAt
+            Instant acknowledgedAt,
+            String videoRoomId
     ) {}
 
     public record InboxResponse(List<PanicAlertItem> items) {}
@@ -37,8 +38,8 @@ public class PanicAlertController {
     @PreAuthorize("hasRole('CLIENT')")
     public TriggerResponse trigger(Authentication auth, @RequestBody(required = false) TriggerRequest req) {
         boolean longPress = req != null && req.longPress();
-        Integer id = service.trigger(auth.getName(), longPress);
-        return new TriggerResponse(id);
+        PanicAlert alert = service.trigger(auth.getName(), longPress);
+        return new TriggerResponse(alert.getId(), alert.getVideoRoomId());
     }
 
     @GetMapping("/inbox")
@@ -53,7 +54,8 @@ public class PanicAlertController {
                         a.getStatus().name(),
                         a.isTriggeredByLongPress(),
                         a.getCreatedAt(),
-                        a.getAcknowledgedAt()
+                        a.getAcknowledgedAt(),
+                        a.getVideoRoomId()
                 ))
                 .toList();
 

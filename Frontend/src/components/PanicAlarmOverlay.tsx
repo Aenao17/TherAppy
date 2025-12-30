@@ -1,7 +1,8 @@
 import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonModal } from "@ionic/react";
-import { useEffect, useMemo, useRef } from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import { PanicEvent } from "../hooks/usePanicSocket";
 import { postJsonAuth } from "../api/api";
+import VideoRoom from "./VideoRoom";
 
 type Props = {
     event: PanicEvent | null;
@@ -15,6 +16,11 @@ async function ackAlert(alertId: number) {
 const PanicAlarmOverlay: React.FC<Props> = ({ event, onClose }) => {
     const isOpen = !!event;
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [inCall, setInCall] = useState(false); // Stare pentru apel
+
+    useEffect(() => {
+        if (!event) setInCall(false);
+    }, [event]);
 
     const title = useMemo(() => {
         if (!event) return "Panic alert";
@@ -22,7 +28,7 @@ const PanicAlarmOverlay: React.FC<Props> = ({ event, onClose }) => {
     }, [event]);
 
     useEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen || inCall) return;
 
         // 1) SOUND (loop)
         const audio = new Audio("/sounds/siren.mp3");
@@ -51,7 +57,7 @@ const PanicAlarmOverlay: React.FC<Props> = ({ event, onClose }) => {
             }
             audioRef.current = null;
         };
-    }, [isOpen]);
+    }, [isOpen, inCall]);
 
     const stopEverything = () => {
         if (navigator.vibrate) navigator.vibrate(0);
@@ -75,6 +81,23 @@ const PanicAlarmOverlay: React.FC<Props> = ({ event, onClose }) => {
         }
     };
 
+    const handleAcceptCall = async () => {
+        if (!event) return;
+
+        // 1. Oprim sunetul și vibrațiile imediat
+        stopEverything();
+
+        // 2. Trimitem confirmarea (ACK) la server ca să știe că am preluat
+        try {
+            await ackAlert(event.alertId);
+        } catch {
+            console.error("Failed to ack, continuing to call anyway");
+        }
+
+        // 3. Intrăm în interfața video
+        setInCall(true);
+    };
+
     const handleStartSound = async () => {
         if (!audioRef.current) return;
         try {
@@ -83,6 +106,22 @@ const PanicAlarmOverlay: React.FC<Props> = ({ event, onClose }) => {
             // ignore
         }
     };
+
+    //MOD APEL VIDEO
+    if (inCall && event?.videoRoomId) {
+        return (
+            <IonModal isOpen={true} backdropDismiss={false}>
+                <VideoRoom
+                    roomName={event.videoRoomId}
+                    displayName="Psiholog"
+                    onClose={() => {
+                        setInCall(false);
+                        onClose(); // Închidem tot overlay-ul când se termină apelul
+                    }}
+                />
+            </IonModal>
+        );
+    }
 
     return (
         <IonModal isOpen={isOpen} backdropDismiss={false}>
@@ -107,8 +146,14 @@ const PanicAlarmOverlay: React.FC<Props> = ({ event, onClose }) => {
                         )}
 
                         <div style={{ display: "grid", gap: 10 }}>
+                            {/* Buton NOU de preluare apel */}
+                            {event?.videoRoomId && (
+                                <IonButton expand="block" color="success" onClick={handleAcceptCall}>
+                                    📞 Acceptă Apel Video
+                                </IonButton>
+                            )}
                             <IonButton expand="block" color="danger" onClick={handleAcknowledge}>
-                                Acknowledge & Stop Alarm
+                                {event?.videoRoomId ?  "Doar confirmare (Fără Video)" : "Acknowledge & Stop Alarm"}
                             </IonButton>
 
                             <IonButton expand="block" fill="outline" onClick={handleStartSound}>
