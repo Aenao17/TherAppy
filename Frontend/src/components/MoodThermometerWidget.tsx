@@ -1,14 +1,15 @@
 import {
-  IonButton,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
   IonLoading,
   IonToast,
+  IonRange,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createMood, getMood } from "../api/mood";
+import "./css/MoodThermometerWidget.css";
 
 const labels: Record<number, string> = {
   1: "Very bad",
@@ -18,8 +19,16 @@ const labels: Record<number, string> = {
   5: "Very good",
 };
 
+const emojis: Record<number, string> = {
+  1: "😞",
+  2: "😕",
+  3: "😐",
+  4: "🙂",
+  5: "😁",
+};
+
 const MoodThermometerWidget: React.FC = () => {
-  const [selected, setSelected] = useState<number | null>(null);
+  const [selected, setSelected] = useState<number>(3);
   const [lastSaved, setLastSaved] = useState<number | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -34,15 +43,15 @@ const MoodThermometerWidget: React.FC = () => {
     const items = await getMood();
     if (items.length > 0) {
       setLastSaved(items[0].score);
+      setSelected(items[0].score);
     } else {
       setLastSaved(null);
+      setSelected(3);
     }
   };
 
   useEffect(() => {
-    loadLast().catch(() => {
-      // nu e critic dacă nu se încarcă
-    });
+    loadLast().catch(() => {});
   }, []);
 
   const onPick = async (score: number) => {
@@ -61,70 +70,101 @@ const MoodThermometerWidget: React.FC = () => {
     }
   };
 
+  const subtitle = useMemo(() => `Tap or slide (1 = very bad, 5 = very good)`, []);
+
   return (
-    <>
-      <IonCard>
-        <IonCardHeader>
-          <IonCardTitle>Emotional thermometer</IonCardTitle>
-        </IonCardHeader>
+      <>
+        <IonCard className="ui-card mood-card">
+          <IonCardHeader>
+            <IonCardTitle>Emotional thermometer</IonCardTitle>
+          </IonCardHeader>
 
-        <IonCardContent>
-          <div style={{ marginBottom: 10, opacity: 0.85 }}>
-            Tap a number (1 = very bad, 5 = very good)
-          </div>
+          <IonCardContent>
+            <div className="mood-subtitle">{subtitle}</div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(5, 1fr)",
-              gap: 10,
-            }}
-          >
-            {[1, 2, 3, 4, 5].map((n) => (
-              <IonButton
-                key={n}
-                expand="block"
-                onClick={() => onPick(n)}
-                disabled={isLoading}
-                fill={(selected === n || lastSaved === n) ? "solid" : "outline"}
-                style={{
-                  height: 64,          // big tap target
-                  fontSize: 20,
-                  fontWeight: 700,
-                  borderRadius: 16,
-                }}
-              >
-                {n}
-              </IonButton>
-            ))}
-          </div>
-
-          <div style={{ marginTop: 12 }}>
-            {lastSaved ? (
-              <div>
-                Last saved: <b>{lastSaved}</b> — {labels[lastSaved]}
+            {/* ✅ panel care “ține” sliderul + valoarea fără să iasă din card */}
+            <div className="mood-panel">
+              <div className="mood-scale">
+                <span className="mood-scale-left">Bad</span>
+                <span className="mood-scale-right">Excellent</span>
               </div>
-            ) : (
-              <div style={{ opacity: 0.7 }}>No mood saved yet.</div>
-            )}
-          </div>
-        </IonCardContent>
-      </IonCard>
 
-      <IonLoading isOpen={isLoading} message="Saving..." />
-      <IonToast
-        isOpen={showError}
-        message={errorMessage}
-        duration={2000}
-        onDidDismiss={() => setShowError(false)}
-      />
-      <IonToast
-        isOpen={showSuccess}
-        message={successMessage}
-        duration={1500}
-        onDidDismiss={() => setShowSuccess(false)}
-      />
-    </>
+              {/* ✅ wrapper pt range (overflow fix) */}
+              <div className="mood-range-wrap">
+                <IonRange
+                    min={1}
+                    max={5}
+                    step={1}
+                    snaps
+                    ticks={false}
+                    value={selected}
+                    disabled={isLoading}
+                    onIonChange={(e) => {
+                      const v = Number(e.detail.value ?? 3);
+                      setSelected(v);
+                    }}
+                    onIonKnobMoveEnd={(e) => {
+                      const v = Number(e.detail.value ?? selected);
+                      onPick(v);
+                    }}
+                    className="mood-range"
+                />
+              </div>
+
+              <div className="mood-value">
+                <span className="mood-emoji">{emojis[selected]}</span>
+                <span className="mood-text">
+                <b>{selected}</b> — {labels[selected]}
+              </span>
+              </div>
+            </div>
+
+            {/* ✅ 5 tappable buttons */}
+            <div className="mood-buttons">
+              {[1, 2, 3, 4, 5].map((n) => {
+                const isActive = selected === n;
+                return (
+                    <button
+                        key={n}
+                        type="button"
+                        className={`mood-chip ${isActive ? "is-active" : ""}`}
+                        onClick={() => onPick(n)}
+                        disabled={isLoading}
+                        aria-label={`Mood ${n} - ${labels[n]}`}
+                    >
+                      <span className="mood-chip-emoji">{emojis[n]}</span>
+                      <span className="mood-chip-num">{n}</span>
+                    </button>
+                );
+              })}
+            </div>
+
+            <div className="mood-last">
+              {lastSaved ? (
+                  <div>
+                    Last saved: <b>{lastSaved}</b> — {labels[lastSaved]}
+                  </div>
+              ) : (
+                  <div className="mood-muted">No mood saved yet.</div>
+              )}
+            </div>
+          </IonCardContent>
+        </IonCard>
+
+        <IonLoading isOpen={isLoading} message="Saving..." />
+        <IonToast
+            isOpen={showError}
+            message={errorMessage}
+            duration={2000}
+            onDidDismiss={() => setShowError(false)}
+        />
+        <IonToast
+            isOpen={showSuccess}
+            message={successMessage}
+            duration={1500}
+            onDidDismiss={() => setShowSuccess(false)}
+        />
+      </>
   );
 };
 

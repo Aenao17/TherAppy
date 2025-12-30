@@ -1,0 +1,93 @@
+/* Ionic Variables and Theming. For more info, please see:
+http://ionicframework.com/docs/theming/
+*/
+
+:root {
+    /* ----------- LAVENDER PALETTE (GLOBAL) ----------- */
+    --lav-50:  #F6F4FF;
+    --lav-100: #EEE9FF;
+    --lav-200: #DED6FF;
+    --lav-300: #C7B9FF;
+    --lav-400: #A892FF;
+    --lav-500: #8C72FF; /* primary base */
+    --lav-600: #7B61FF;
+    --lav-700: #6A52E6;
+    --lav-800: #5944C4;
+    --lav-900: #3E318A;
+
+    /* ----------- IONIC COLOR SYSTEM (ALL LAVENDER) ----------- */
+    --ion-color-primary: var(--lav-600);
+    --ion-color-primary-rgb: 123,97,255;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 255,255,255;
+    --ion-color-primary-shade: var(--lav-700);
+    --ion-color-primary-tint: var(--lav-500);
+
+    /* make everything else lavender-ish too */
+    --ion-color-secondary: var(--lav-600);
+    --ion-color-secondary-rgb: 123,97,255;
+    --ion-color-secondary-contrast: #ffffff;
+    --ion-color-secondary-contrast-rgb: 255,255,255;
+    --ion-color-secondary-shade: var(--lav-700);
+    --ion-color-secondary-tint: var(--lav-500);
+
+    --ion-color-tertiary: var(--lav-600);
+    --ion-color-tertiary-rgb: 123,97,255;
+    --ion-color-tertiary-contrast: #ffffff;
+    --ion-color-tertiary-contrast-rgb: 255,255,255;
+    --ion-color-tertiary-shade: var(--lav-700);
+    --ion-color-tertiary-tint: var(--lav-500);
+
+    /* success/warning/danger -> keep semantics, but still lavender to match requirement */
+    --ion-color-success: var(--lav-600);
+    --ion-color-success-rgb: 123,97,255;
+    --ion-color-success-contrast: #ffffff;
+    --ion-color-success-contrast-rgb: 255,255,255;
+    --ion-color-success-shade: var(--lav-700);
+    --ion-color-success-tint: var(--lav-500);
+
+    --ion-color-warning: var(--lav-600);
+    --ion-color-warning-rgb: 123,97,255;
+    --ion-color-warning-contrast: #ffffff;
+    --ion-color-warning-contrast-rgb: 255,255,255;
+    --ion-color-warning-shade: var(--lav-700);
+    --ion-color-warning-tint: var(--lav-500);
+
+    --ion-color-danger: var(--lav-600);
+    --ion-color-danger-rgb: 123,97,255;
+    --ion-color-danger-contrast: #ffffff;
+    --ion-color-danger-contrast-rgb: 255,255,255;
+    --ion-color-danger-shade: var(--lav-700);
+    --ion-color-danger-tint: var(--lav-500);
+
+    /* neutrals */
+    --ion-background-color: #F7F7FF;
+    --ion-background-color-rgb: 247,247,255;
+
+    --ion-text-color: #14142B;
+    --ion-text-color-rgb: 20,20,43;
+
+    --ion-color-step-50:  #f2f2ff;
+    --ion-color-step-100: #e7e7ff;
+    --ion-color-step-150: #ddddff;
+    --ion-color-step-200: #d2d2ff;
+    --ion-color-step-250: #c7c7ff;
+    --ion-color-step-300: #bdbdff;
+    --ion-color-step-350: #b2b2ff;
+    --ion-color-step-400: #a7a7ff;
+    --ion-color-step-450: #9d9dff;
+    --ion-color-step-500: #9292ff;
+    --ion-color-step-550: #8787ff;
+    --ion-color-step-600: #7d7dff;
+    --ion-color-step-650: #7272ff;
+    --ion-color-step-700: #6767ff;
+    --ion-color-step-750: #5d5dff;
+    --ion-color-step-800: #5252ff;
+    --ion-color-step-850: #4747ff;
+    --ion-color-step-900: #3d3dff;
+    --ion-color-step-950: #3232ff;
+
+    /* defaults for cards / borders */
+    --ion-item-background: #ffffff;
+    --ion-card-background: #ffffff;
+}

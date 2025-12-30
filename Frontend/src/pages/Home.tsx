@@ -1,6 +1,16 @@
 import "./css/Home.css";
+
+// ✅ Tema globală (same as Login/Signup)
+import "./css/base.css";
+import "./css/layout.css";
+import "./css/forms.css";
+import "./css/cards.css";
+import "./css/lists.css";
+import "./css/utilities.css";
+
 import {
-    IonButton, IonButtons,
+    IonButton,
+    IonButtons,
     IonCard,
     IonCardContent,
     IonCardHeader,
@@ -10,43 +20,34 @@ import {
     IonPage,
     IonTitle,
     IonToolbar,
-} from "@ionic/react";
-import { useMemo } from "react";
-import { getRole } from "../auth/jwt";
-import { useIonRouter } from "@ionic/react";
-import {
     IonInput,
     IonItem,
     IonLabel,
-    IonList,
     IonLoading,
     IonNote,
     IonToast,
 } from "@ionic/react";
-import { usePanicSocket, PanicEvent } from "../hooks/usePanicSocket";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useIonRouter, useIonViewWillEnter } from "@ionic/react";
+import { getRole, getUsername } from "../auth/jwt";
 import { getJsonAuth, postJsonAuth } from "../api/api";
-import {clearTokens} from "../auth/authStorage";
-import { IonBadge, IonIcon } from "@ionic/react";
-import { mailUnreadOutline } from "ionicons/icons";
-import { useIonViewWillEnter } from "@ionic/react";
+import { clearTokens } from "../auth/authStorage";
 
 import EmotionLogWidget from "../components/EmotionLogWidget";
 import MoodThermometerWidget from "../components/MoodThermometerWidget";
 import PsychologistClientsWidget from "../components/PsychologistClientsWidget";
 import PsychologistToolbar from "../components/PsychologistToolbar";
 import PanicButton from "../components/PanicButton";
-
 import PanicAlarmOverlay from "../components/PanicAlarmOverlay";
-import { getUsername } from "../auth/jwt"; // dacă ai, altfel îți zic mai jos
-
+import { usePanicSocket, PanicEvent } from "../hooks/usePanicSocket";
 
 const Home: React.FC = () => {
     const router = useIonRouter();
     const role = useMemo(() => getRole(), []);
+
     type InboxItem = {
-        id: number; // Integer in backend
+        id: number;
         requesterUsername: string;
         targetUsername: string;
         type: string;
@@ -65,17 +66,13 @@ const Home: React.FC = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const [showSuccess, setShowSuccess] = useState(false);
 
+    // (păstrat - nu-l folosești direct acum, dar nu stric)
     const [inbox, setInbox] = useState<InboxItem[]>([]);
     const [panicEvent, setPanicEvent] = useState<PanicEvent | null>(null);
-
 
     const [inboxCount, setInboxCount] = useState(0);
 
     type InboxResponse = { requests: { id: number }[] };
-
-    const loadInbox = async () => {
-        return await getJsonAuth<InboxResponse>("/api/onboarding/inbox");
-    };
 
     const refreshInboxCount = async () => {
         const resp = await getJsonAuth<InboxResponse>("/api/onboarding/inbox");
@@ -94,7 +91,6 @@ const Home: React.FC = () => {
                 try {
                     await refreshInboxCount();
                 } catch {
-                    // nu blocăm UX-ul dacă count-ul pică
                     setInboxCount(0);
                 }
             } else {
@@ -103,14 +99,9 @@ const Home: React.FC = () => {
         })();
     }, [role]);
 
-    usePanicSocket(
-        role === "PSYCHOLOGIST" ? getUsername() : null,
-        (event) => {
-            setPanicEvent(event);
-        }
-    );
-
-
+    usePanicSocket(role === "PSYCHOLOGIST" ? getUsername() : null, (event) => {
+        setPanicEvent(event);
+    });
 
     const requestClient = async () => {
         const t = psychologistUsername.trim();
@@ -167,11 +158,10 @@ const Home: React.FC = () => {
         router.push("/login", "root");
     };
 
-
     return (
         <IonPage>
             <IonHeader>
-                {(role === "ADMIN" || role === "PSYCHOLOGIST") ? (
+                {role === "ADMIN" || role === "PSYCHOLOGIST" ? (
                     <PsychologistToolbar
                         title="Home"
                         inboxCount={inboxCount}
@@ -179,7 +169,7 @@ const Home: React.FC = () => {
                         onLogout={handleLogout}
                     />
                 ) : (
-                    <IonToolbar>
+                    <IonToolbar className="app-toolbar">
                         <IonTitle>Home</IonTitle>
                         <IonButtons slot="end">
                             <IonButton fill="clear" onClick={handleLogout}>
@@ -190,108 +180,144 @@ const Home: React.FC = () => {
                 )}
             </IonHeader>
 
+            {/* ✅ Responsive container (no ion-padding) */}
+            <IonContent className="home-page">
+                <div className="app-shell">
+                    {/* Header section */}
+                    <div className="home-hero">
+                        <div className="home-hero-text">
+                            <h2 className="home-title">Welcome</h2>
+                            <p className="home-subtitle">Your workspace adapts to your role.</p>
+                        </div>
 
-            <IonContent className="ion-padding">
-                <IonCard>
-                    <IonCardHeader>
-                        <IonCardTitle>Current role</IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>{role ?? "Unknown"}</IonCardContent>
-                </IonCard>
-
-                {role === "USER" && (
-                    <IonCard>
-                        <IonCardHeader>
-                            <IonCardTitle>Finish setup</IonCardTitle>
-                        </IonCardHeader>
-                        <IonCardContent>
-                            <p>
-                                Your account is currently <b>USER</b>. To use the platform, you must be added
-                                as a <b>CLIENT</b> or approved as a <b>PSYCHOLOGIST</b>.
-                            </p>
-
-                            <IonItem>
-                                <IonLabel position="stacked">Become a CLIENT</IonLabel>
-                                <IonInput
-                                    value={psychologistUsername}
-                                    onIonInput={(e) => setPsychologistUsername(e.detail.value ?? "")}
-                                    placeholder="Psychologist username"
-                                    disabled={isLoading}
-                                />
-                            </IonItem>
-                            <IonButton
-                                expand="block"
-                                onClick={requestClient}
-                                disabled={isLoading || psychologistUsername.trim().length < 3}
-                                className="ion-margin-top"
-                            >
-                                Request Client Access
-                            </IonButton>
-
-                            <div style={{ height: 16 }} />
-
-                            <IonItem>
-                                <IonLabel position="stacked">Become a PSYCHOLOGIST</IonLabel>
-                                <IonInput
-                                    value={adminUsername}
-                                    onIonInput={(e) => setAdminUsername(e.detail.value ?? "")}
-                                    placeholder="Admin username"
-                                    disabled={isLoading}
-                                />
-                            </IonItem>
-                            <IonButton
-                                expand="block"
-                                onClick={requestPsychologist}
-                                disabled={isLoading || adminUsername.trim().length < 3}
-                                className="ion-margin-top"
-                            >
-                                Request Psychologist Approval
-                            </IonButton>
-
-                            <IonNote>
-                                After approval, please log out and log in again to refresh your role.
-                            </IonNote>
-                        </IonCardContent>
-                    </IonCard>
-                )}
-
-                {role === "CLIENT" && (
-                    <div className="client-grid">
-                        <EmotionLogWidget />
-                        <MoodThermometerWidget />
+                        <div className={`role-pill role-${(role ?? "unknown").toLowerCase()}`}>
+                            <span className="role-pill-label">Role</span>
+                            <span className="role-pill-value">{role ?? "Unknown"}</span>
+                        </div>
                     </div>
-                )}
 
-                {role === "PSYCHOLOGIST" && (
-                    <>
-                        <PsychologistClientsWidget />
-                    </>
-                )}
+                    {role === "USER" && (
+                        <IonCard className="ui-card home-card">
+                            <IonCardHeader>
+                                <IonCardTitle>Finish setup</IonCardTitle>
+                            </IonCardHeader>
+                            <IonCardContent>
+                                <p className="home-paragraph">
+                                    Your account is currently <b>USER</b>. To use the platform, you must be added as a{" "}
+                                    <b>CLIENT</b> or approved as a <b>PSYCHOLOGIST</b>.
+                                </p>
 
-                {role === "ADMIN" && (
-                    <IonCard>
-                        <IonCardHeader>
-                            <IonCardTitle>Admin area</IonCardTitle>
-                        </IonCardHeader>
-                        <IonCardContent>
-                            <IonButton expand="block" onClick={() => router.push("/admin", "forward")}>
-                                Open Admin Dashboard
-                            </IonButton>
+                                <div className="home-grid-2">
+                                    <div className="home-panel">
+                                        <div className="home-panel-title">Become a CLIENT</div>
 
-                            <IonButton
-                                expand="block"
-                                onClick={() => router.push("/inbox", "forward")}
-                                disabled={isLoading}
-                                className="ion-margin-top"
-                            >
-                                Open Inbox
-                                {/* optional badge:
-              {inboxCount > 0 && <IonBadge style={{ marginLeft: 8 }}>{inboxCount}</IonBadge>}
-              */}
-                            </IonButton>
-                        </IonCardContent>
-                    </IonCard>
-                )}
+                                        <IonItem lines="none" className="form-item">
+                                            <IonLabel position="stacked">Psychologist username</IonLabel>
+                                            <IonInput
+                                                value={psychologistUsername}
+                                                onIonInput={(e) => setPsychologistUsername(e.detail.value ?? "")}
+                                                placeholder="e.g. dr_andrei"
+                                                disabled={isLoading}
+                                                className="form-input"
+                                            />
+                                        </IonItem>
+
+                                        <IonButton
+                                            expand="block"
+                                            className="primary-button"
+                                            onClick={requestClient}
+                                            disabled={isLoading || psychologistUsername.trim().length < 3}
+                                        >
+                                            Request Client Access
+                                        </IonButton>
+                                    </div>
+
+                                    <div className="home-panel">
+                                        <div className="home-panel-title">Become a PSYCHOLOGIST</div>
+
+                                        <IonItem lines="none" className="form-item">
+                                            <IonLabel position="stacked">Admin username</IonLabel>
+                                            <IonInput
+                                                value={adminUsername}
+                                                onIonInput={(e) => setAdminUsername(e.detail.value ?? "")}
+                                                placeholder="e.g. admin_ion"
+                                                disabled={isLoading}
+                                                className="form-input"
+                                            />
+                                        </IonItem>
+
+                                        <IonButton
+                                            expand="block"
+                                            className="primary-button"
+                                            onClick={requestPsychologist}
+                                            disabled={isLoading || adminUsername.trim().length < 3}
+                                        >
+                                            Request Psychologist Approval
+                                        </IonButton>
+                                    </div>
+                                </div>
+
+                                <IonNote className="home-note">
+                                    After approval, please log out and log in again to refresh your role.
+                                </IonNote>
+                            </IonCardContent>
+                        </IonCard>
+                    )}
+
+                    {role === "CLIENT" && (
+                        <IonCard className="ui-card home-card">
+                            <IonCardHeader>
+                                <IonCardTitle>Quick logging</IonCardTitle>
+                            </IonCardHeader>
+                            <IonCardContent>
+                                <div className="client-grid">
+                                    <EmotionLogWidget />
+                                    <MoodThermometerWidget />
+                                </div>
+                            </IonCardContent>
+                        </IonCard>
+                    )}
+
+                    {role === "PSYCHOLOGIST" && (
+                        <IonCard className="ui-card home-card">
+                            <IonCardHeader>
+                                <IonCardTitle>Dashboard</IonCardTitle>
+                            </IonCardHeader>
+                            <IonCardContent>
+                                <PsychologistClientsWidget />
+                            </IonCardContent>
+                        </IonCard>
+                    )}
+
+                    {role === "ADMIN" && (
+                        <IonCard className="ui-card home-card">
+                            <IonCardHeader>
+                                <IonCardTitle>Admin area</IonCardTitle>
+                            </IonCardHeader>
+                            <IonCardContent>
+                                <div className="home-actions">
+                                    <IonButton
+                                        expand="block"
+                                        className="primary-button"
+                                        onClick={() => router.push("/admin", "forward")}
+                                    >
+                                        Open Admin Dashboard
+                                    </IonButton>
+
+                                    <IonButton
+                                        expand="block"
+                                        className="secondary-button"
+                                        onClick={() => router.push("/inbox", "forward")}
+                                        disabled={isLoading}
+                                    >
+                                        Open Inbox
+                                        {inboxCount > 0 && <span className="inbox-badge">{inboxCount}</span>}
+                                    </IonButton>
+                                </div>
+                            </IonCardContent>
+                        </IonCard>
+                    )}
+                </div>
 
                 <IonLoading isOpen={isLoading} message="Please wait..." />
 
@@ -311,27 +337,24 @@ const Home: React.FC = () => {
 
                 <IonToast
                     isOpen={!!panicEvent}
-                    message={
-                        panicEvent
-                            ? `🚨 PANIC ALERT from @${panicEvent.clientUsername}`
-                            : ""
-                    }
+                    message={panicEvent ? `🚨 PANIC ALERT from @${panicEvent.clientUsername}` : ""}
                     duration={0}
                     buttons={[
                         {
                             text: "Acknowledge",
-                            handler: () => {
-                                // aici mai târziu apelăm /ack
-                                setPanicEvent(null);
-                            },
+                            handler: () => setPanicEvent(null),
                         },
                     ]}
                     color="danger"
                 />
             </IonContent>
-            <PanicButton enabled={role==="CLIENT"} />
-            <PanicAlarmOverlay event={panicEvent} onClose={() => setPanicEvent(null)} />
 
+            {/* ✅ Panic button fixed, one-tap, safe-area */}
+            <div className="panic-fab">
+                <PanicButton enabled={role === "CLIENT"} />
+            </div>
+
+            <PanicAlarmOverlay event={panicEvent} onClose={() => setPanicEvent(null)} />
         </IonPage>
     );
 };

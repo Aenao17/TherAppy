@@ -1,0 +1,22 @@
+/* cards.css */
+ion-card {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+ion-card-title {
+    font-size: 1.1rem;
+}
+
+ion-card-content {
+    color: var(--text-main);
+}
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    background: #7c6ae6;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+

@@ -1,3 +1,33 @@
-.profile-grid
-{ display: grid; grid-template-columns: 1fr; gap: 12px; }
-@media (min-width: 900px) { .profile-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
+@import "./base.css";
+@import "./layout.css";
+@import "./lists.css";
+
+.clients-details {
+    margin-top: 24px;
+}
+
+.client-username {
+    font-weight: 600;
+}
+
+.client-id {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.clients-empty {
+    opacity: 0.6;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+@media (min-width: 900px) {
+    .profile-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+    }
+}

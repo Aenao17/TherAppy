@@ -15,6 +15,7 @@ import {
     IonLoading,
     IonToast,
 } from "@ionic/react";
+
 import { useEffect, useMemo, useState } from "react";
 import { getMyClients, PsychClient } from "../api/psychologistClients";
 import PanicButton from "../components/PanicButton";
@@ -134,15 +135,15 @@ const Clients: React.FC = () => {
                             color={selected?.id === c.id ? "light" : undefined}
                         >
                             <IonLabel>
-                                <div style={{ fontWeight: 600 }}>@{c.username}</div>
-                                <div style={{ fontSize: 12, opacity: 0.7 }}>id: {c.id}</div>
+                                <div className="client-username">@{c.username}</div>
+                                <div className="client-id">id: {c.id}</div>
                             </IonLabel>
                         </IonItem>
                     ))}
                 </IonList>
 
-                <div style={{ marginTop: 24 }}>
-                    {selected ? (
+                <div className="clients-details">
+                {selected ? (
                         <>
                             <h2>@{selected.username}</h2>
 
@@ -154,7 +155,7 @@ const Clients: React.FC = () => {
                             </PrivacyGate>
                         </>
                     ) : (
-                        <p style={{ opacity: 0.6 }}>Select a client to view details.</p>
+                    <p className="clients-empty">Select a client to view details.</p>
                     )}
                 </div>
 
