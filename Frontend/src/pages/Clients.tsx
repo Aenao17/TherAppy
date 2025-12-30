@@ -20,7 +20,6 @@ import { useEffect, useMemo, useState } from "react";
 import { getMyClients, PsychClient } from "../api/psychologistClients";
 import PanicButton from "../components/PanicButton";
 
-
 import PrivacyGate from "../components/PrivacyGate";
 import ClientEmotionLogsWidget from "../components/ClientEmotionLogsWidget";
 import ClientMoodChartWidget from "../components/ClientMoodChartWidget";
@@ -28,6 +27,7 @@ import PsychologistToolbar from "../components/PsychologistToolbar";
 import { useIonRouter } from "@ionic/react";
 import {getJsonAuth} from "../api/api";
 import {clearTokens} from "../auth/authStorage";
+import PsychologistMaterialsWidget from "../components/PsychologistMaterialsWidget";
 
 const PAGE_SIZE = 10;
 
@@ -151,6 +151,7 @@ const Clients: React.FC = () => {
                                 <div className="profile-grid">
                                     <ClientMoodChartWidget clientId={selected.id} />
                                     <ClientEmotionLogsWidget clientId={selected.id} />
+                                    <PsychologistMaterialsWidget clientId={selected.id} />
                                 </div>
                             </PrivacyGate>
                         </>
