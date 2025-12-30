@@ -1,5 +1,5 @@
-import { IonBadge, IonButton, IonButtons, IonIcon, IonTitle, IonToolbar } from "@ionic/react";
-import { mailOutline, logOutOutline } from "ionicons/icons";
+import {IonBadge, IonButton, IonButtons, IonIcon, IonTitle, IonToolbar, useIonRouter} from "@ionic/react";
+import {mailOutline, logOutOutline, homeOutline} from "ionicons/icons";
 
 type Props = {
     title: string;
@@ -9,13 +9,17 @@ type Props = {
 };
 
 const PsychologistToolbar: React.FC<Props> = ({ title, inboxCount, onOpenInbox, onLogout }) => {
+    const router = useIonRouter();
     return (
         <IonToolbar>
             <IonTitle slot="start">{title}</IonTitle>
 
 
             <IonButtons slot="end">
-                <IonButton onClick={onOpenInbox} aria-label="Inbox">
+                <IonButton onClick={() => router.push("/home", "root")} title="Home" aria-label="Home">
+                    <IonIcon icon={homeOutline} />
+                </IonButton>
+                <IonButton onClick={onOpenInbox} title="Inbox" aria-label="Inbox">
                     <IonIcon icon={mailOutline} />
                     {inboxCount > 0 && (
                         <IonBadge
@@ -33,7 +37,7 @@ const PsychologistToolbar: React.FC<Props> = ({ title, inboxCount, onOpenInbox, 
                     )}
                 </IonButton>
 
-                <IonButton onClick={onLogout} aria-label="Logout">
+                <IonButton onClick={onLogout} title="Logout" aria-label="Logout">
                     <IonIcon icon={logOutOutline} />
                 </IonButton>
             </IonButtons>

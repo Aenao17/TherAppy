@@ -4,7 +4,7 @@ import {
     IonCardHeader,
     IonCardTitle,
     IonContent,
-    IonHeader,
+    IonHeader, IonIcon,
     IonPage,
     IonTitle,
     IonToolbar,
@@ -17,6 +17,7 @@ import {
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { patchJsonAuth, deleteAuth, getJsonAuth } from "../api/api";
+import {homeOutline} from "ionicons/icons";
 
 import "./css/base.css";
 import "./css/layout.css";

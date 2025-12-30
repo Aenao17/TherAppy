@@ -1,10 +1,12 @@
 package stucanii.backend.api.error;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 
@@ -31,4 +33,11 @@ public class ApiExceptionHandler {
         return Map.of("error", ex.getMessage());
     }
 
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, String>> handleResponseStatus(ResponseStatusException ex) {
+        // Punem motivul excepției (mesajul tău) în câmpul "error" pe care îl așteaptă frontend-ul
+        return ResponseEntity
+                .status(ex.getStatusCode())
+                .body(Map.of("error", ex.getReason()));
+    }
 }

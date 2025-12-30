@@ -27,6 +27,7 @@ type UserResponse = {
 };
 
 const Signup: React.FC = () => {
+    const router = useIonRouter();
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -68,6 +69,7 @@ const Signup: React.FC = () => {
             // reset form (opțional)
             setPassword("");
             setConfirmPassword("");
+            router.push("/login", "root");
         } catch (e) {
             const msg = e instanceof Error ? e.message : "Signup failed";
             setErrorMessage(msg);

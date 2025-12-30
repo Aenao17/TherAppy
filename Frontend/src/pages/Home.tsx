@@ -116,6 +116,9 @@ const Home: React.FC = () => {
             setSuccessMessage("Request sent to psychologist. Wait for approval.");
             setShowSuccess(true);
             setPsychologistUsername("");
+            setTimeout(() => {
+                handleLogout();
+            }, 2100);
         } catch (e) {
             const msg = e instanceof Error ? e.message : "Request failed";
             setErrorMessage(msg);
@@ -138,6 +141,9 @@ const Home: React.FC = () => {
             setSuccessMessage("Request sent to admin. Wait for approval.");
             setShowSuccess(true);
             setAdminUsername("");
+            setTimeout(() => {
+                handleLogout();
+            }, 2100);
         } catch (e) {
             const msg = e instanceof Error ? e.message : "Request failed";
             setErrorMessage(msg);

@@ -134,6 +134,10 @@ const Login: React.FC = () => {
                     </div>
                 </div>
 
+                <IonButton expand="block" fill="clear" routerLink="/signup">
+                    Don't have an account? Register here!
+                </IonButton>
+
                 <IonLoading isOpen={isLoading} message="Logging in..." />
 
                 <IonToast
