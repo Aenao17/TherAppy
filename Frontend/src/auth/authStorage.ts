@@ -22,3 +22,25 @@ export function clearTokens() {
 export function isAuthenticated(): boolean {
     return !!getAccessToken();
 }
+
+export function getDecodedToken(): any {
+    const token = getAccessToken();
+    if (!token) return null;
+
+    try {
+        // Logica standard de decodare JWT (Payload-ul este a doua parte, separată de punct)
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            window.atob(base64)
+                .split('')
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error("Eroare la decodarea token-ului", e);
+        return null;
+    }
+}

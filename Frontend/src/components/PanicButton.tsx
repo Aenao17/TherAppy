@@ -1,12 +1,14 @@
 import {
     IonAlert,
     IonButton,
-    IonIcon,
+    IonIcon, IonModal,
     IonToast,
 } from "@ionic/react";
 import { alertCircle } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { triggerPanic } from "../api/panic";
+import { useClientPanicSocket } from "../hooks/useClientPanicSocket";
+import VideoRoom from "./VideoRoom";
 
 type Props = {
     enabled: boolean; // doar pentru CLIENT
@@ -21,10 +23,23 @@ const PanicButton: React.FC<Props> = ({ enabled }) => {
     const [toastMsg, setToastMsg] = useState("");
     const [showToast, setShowToast] = useState(false);
 
+    const [videoRoomId, setVideoRoomId] = useState<string | null>(null);
+
     const holdTimerRef = useRef<number | null>(null);
     const holdStartRef = useRef<number>(0);
     const [holdProgress, setHoldProgress] = useState(0); // 0..1
     const progressTimerRef = useRef<number | null>(null);
+
+    useClientPanicSocket((event) => {
+        if (event.withVideo && event.videoRoomId) {
+            // Caz 1: Psihologul a acceptat apelul -> Intrăm automat în video
+            setVideoRoomId(event.videoRoomId);
+        } else {
+            // Caz 2: Doar confirmare simplă
+            setToastMsg(`👨‍⚕️ Psihologul ${event.psychologistUsername} a confirmat alerta.`);
+            setShowToast(true);
+        }
+    });
 
     const clearHoldTimers = () => {
         if (holdTimerRef.current) window.clearTimeout(holdTimerRef.current);
@@ -87,6 +102,21 @@ const PanicButton: React.FC<Props> = ({ enabled }) => {
     };
 
     if (!enabled) return null;
+
+    // --- RENDER ---
+
+    // Dacă suntem în apel, deschidem fereastra video peste tot
+    if (videoRoomId) {
+        return (
+            <IonModal isOpen={true} backdropDismiss={false}>
+                <VideoRoom
+                    roomName={videoRoomId}
+                    displayName="Client"
+                    onClose={() => setVideoRoomId(null)}
+                />
+            </IonModal>
+        );
+    }
 
     // circle progress (SVG)
     const r = 22;

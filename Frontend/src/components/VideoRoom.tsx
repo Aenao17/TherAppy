@@ -22,6 +22,27 @@ const VideoRoom: React.FC<VideoRoomProps> = ({ roomName, displayName, onClose })
         if (!window.JitsiMeetExternalAPI || !jitsiContainerRef.current) return;
 
         const domain = 'meet.jit.si';
+        // const options = {
+        //     roomName: `therappy-secure-${roomName}`,
+        //     width: '100%',
+        //     height: '100%',
+        //     parentNode: jitsiContainerRef.current,
+        //     userInfo: {
+        //         displayName: displayName
+        //     },
+        //     configOverwrite: {
+        //         startWithAudioMuted: false,
+        //         startWithVideoMuted: false,
+        //         prejoinPageEnabled: false
+        //     },
+        //     interfaceConfigOverwrite: {
+        //         TOOLBAR_BUTTONS: [
+        //             'microphone', 'camera', 'hangup', 'tileview'
+        //         ],
+        //         SHOW_JITSI_WATERMARK: false,
+        //         SHOW_PROMOTIONAL_CLOSE_PAGE: false,
+        //     }
+        // };
         const options = {
             roomName: `therappy-secure-${roomName}`,
             width: '100%',
@@ -33,24 +54,27 @@ const VideoRoom: React.FC<VideoRoomProps> = ({ roomName, displayName, onClose })
             configOverwrite: {
                 startWithAudioMuted: false,
                 startWithVideoMuted: false,
-                prejoinPageEnabled: false
+                prejoinPageEnabled: false,
+                disableDeepLinking: true, // <--- IMPORTANT: Nu cere aplicația mobilă
             },
             interfaceConfigOverwrite: {
                 TOOLBAR_BUTTONS: [
-                    'microphone', 'camera', 'hangup', 'tileview'
+                    'microphone', 'camera', 'hangup', 'tileview', 'raisehand'
                 ],
                 SHOW_JITSI_WATERMARK: false,
                 SHOW_PROMOTIONAL_CLOSE_PAGE: false,
+                // Ascundem opțiunile avansate care ar putea confuza
+                SETTINGS_SECTIONS: ['devices', 'language', 'profile'],
             }
         };
 
         apiRef.current = new window.JitsiMeetExternalAPI(domain, options);
 
-        apiRef.current.addEventListeners({
-            videoConferenceLeft: () => {
-                onClose();
-            },
-        });
+        // apiRef.current.addEventListeners({
+        //     videoConferenceLeft: () => {
+        //         onClose();
+        //     },
+        // });
 
         return () => {
             if (apiRef.current) {

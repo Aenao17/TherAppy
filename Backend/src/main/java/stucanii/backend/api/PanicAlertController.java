@@ -34,6 +34,8 @@ public class PanicAlertController {
 
     public record InboxResponse(List<PanicAlertItem> items) {}
 
+    public record AckRequest(boolean withVideo) {}
+
     @PostMapping("/trigger")
     @PreAuthorize("hasRole('CLIENT')")
     public TriggerResponse trigger(Authentication auth, @RequestBody(required = false) TriggerRequest req) {
@@ -64,7 +66,8 @@ public class PanicAlertController {
 
     @PostMapping("/{id}/ack")
     @PreAuthorize("hasRole('PSYCHOLOGIST')")
-    public void ack(Authentication auth, @PathVariable Integer id) {
-        service.acknowledge(auth.getName(), id);
+    public void ack(Authentication auth, @PathVariable Integer id , @RequestBody(required = false) AckRequest req) {
+        boolean withVideo = req != null && req.withVideo();
+        service.acknowledge(auth.getName(), id, withVideo);
     }
 }

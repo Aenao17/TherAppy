@@ -9,8 +9,8 @@ type Props = {
     onClose: () => void;
 };
 
-async function ackAlert(alertId: number) {
-    await postJsonAuth<void>(`/api/panic/${alertId}/ack`, {});
+async function ackAlert(alertId: number, withVideo: boolean) {
+    await postJsonAuth<void>(`/api/panic/${alertId}/ack`, { withVideo });
 }
 
 const PanicAlarmOverlay: React.FC<Props> = ({ event, onClose }) => {
@@ -72,7 +72,7 @@ const PanicAlarmOverlay: React.FC<Props> = ({ event, onClose }) => {
         if (!event) return;
 
         try {
-            await ackAlert(event.alertId);
+            await ackAlert(event.alertId, false);
         } catch {
             // even if ack fails, we still close locally; UX > strictness
         } finally {
@@ -89,7 +89,7 @@ const PanicAlarmOverlay: React.FC<Props> = ({ event, onClose }) => {
 
         // 2. Trimitem confirmarea (ACK) la server ca să știe că am preluat
         try {
-            await ackAlert(event.alertId);
+            await ackAlert(event.alertId, true);
         } catch {
             console.error("Failed to ack, continuing to call anyway");
         }

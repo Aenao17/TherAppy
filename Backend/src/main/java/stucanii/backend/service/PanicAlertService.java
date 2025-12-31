@@ -5,6 +5,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import stucanii.backend.api.events.PanicAckEvent;
 import stucanii.backend.api.events.PanicWsEvent;
 import stucanii.backend.domain.*;
 import stucanii.backend.repository.PanicAlertRepository;
@@ -75,7 +76,7 @@ public class PanicAlertService {
     }
 
     @Transactional
-    public void acknowledge(String psychologistUsername, Integer alertId) {
+    public void acknowledge(String psychologistUsername, Integer alertId, boolean withVideo) {
         PanicAlert alert = panicRepo.findById(alertId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alert not found"));
 
@@ -85,5 +86,15 @@ public class PanicAlertService {
 
         alert.acknowledge();
         panicRepo.save(alert);
+
+        messaging.convertAndSend(
+                "/topic/panic-updates/" + alert.getClient().getUsername(),
+                new PanicAckEvent(
+                        alert.getId(),
+                        withVideo,
+                        psychologistUsername,
+                        alert.getVideoRoomId()
+                )
+        );
     }
 }
