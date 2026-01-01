@@ -7,21 +7,28 @@ import {
     IonHeader, IonIcon,
     IonPage,
     IonTitle,
-    IonToolbar, useIonRouter,
+    IonToolbar,
+    IonLoading,
+    IonToast,
+    IonItem,
+    IonList,
+    IonButton,
+    IonAlert,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { IonLoading, IonToast } from "@ionic/react";
-import { IonItem, IonLabel, IonList, IonNote } from "@ionic/react";
-import { IonButton, IonButtons, IonAlert } from "@ionic/react";
 import { patchJsonAuth, deleteAuth, getJsonAuth } from "../api/api";
 import {homeOutline} from "ionicons/icons";
 
+import "./css/base.css";
+import "./css/layout.css";
+import "./css/forms.css";
+import "./css/cards.css";
+import "./css/lists.css";
+import "./css/utilities.css";
+import "./css/AdminDashboard.css";
 
 const AdminDashboard: React.FC = () => {
-
-    type AdminStatsResponse = {
-        totalUsers: number;
-    };
+    type AdminStatsResponse = { totalUsers: number };
 
     type AdminUserItem = {
         id: number;
@@ -29,11 +36,7 @@ const AdminDashboard: React.FC = () => {
         role: string;
     };
 
-    type AdminUsersResponse = {
-        users: AdminUserItem[];
-    };
-
-    const router = useIonRouter();
+    type AdminUsersResponse = { users: AdminUserItem[] };
 
     const [stats, setStats] = useState<AdminStatsResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -49,6 +52,7 @@ const AdminDashboard: React.FC = () => {
             try {
                 const data = await getJsonAuth<AdminStatsResponse>("/api/admin/stats");
                 setStats(data);
+
                 const usersResp = await getJsonAuth<AdminUsersResponse>("/api/admin/users");
                 setUsers(usersResp.users);
             } catch (e) {
@@ -103,82 +107,107 @@ const AdminDashboard: React.FC = () => {
     return (
         <IonPage>
             <IonHeader>
-                <IonToolbar>
-                    <IonTitle slot="start">Admin Dashboard</IonTitle>
-                    <IonButtons slot="end">
-                        <IonButton onClick={() => router.push("/home", "root")} title="Home" aria-label="Home">
-                            <IonIcon icon={homeOutline} />
-                        </IonButton>
-
-                    </IonButtons>
+                <IonToolbar className="app-toolbar">
+                    <IonTitle>Admin Dashboard</IonTitle>
                 </IonToolbar>
             </IonHeader>
 
-            <IonContent className="ion-padding">
-                <IonCard>
-                    <IonCardHeader>
-                        <IonCardTitle>Overview</IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        {stats ? (
-                            <div>Total users: <b>{stats.totalUsers}</b></div>
-                        ) : (
-                            <div>No stats loaded.</div>
-                        )}
-                    </IonCardContent>
-                </IonCard>
+            <IonContent className="admin-page">
+                <div className="admin-shell">
+                    <div className="admin-header">
+                        <div>
+                            <h2 className="admin-title">Administration</h2>
+                            <p className="admin-subtitle">Users overview & management</p>
+                        </div>
 
-                <IonCard>
-                    <IonCardHeader>
-                        <IonCardTitle>User Management</IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        {users.length === 0 ? (
-                            <div>No users found.</div>
-                        ) : (
-                            <IonList>
-                                {users.map((u) => (
-                                    <IonItem key={u.id}>
-                                        <IonLabel>
-                                            <div><b>{u.username}</b></div>
-                                            <div>ID: {u.id}</div>
-                                        </IonLabel>
-                                        <IonNote slot="end">{u.role}</IonNote>
-                                        <IonButtons slot="end">
-                                            <IonButton onClick={() => toggleRole(u)}>
-                                                {u.role === "ADMIN" ? "Demote" : "Promote"}
-                                            </IonButton>
+                        <div className="admin-pill">
+                            <span className="admin-pill-label">Total users</span>
+                            <span className="admin-pill-value">{stats?.totalUsers ?? "—"}</span>
+                        </div>
+                    </div>
 
-                                            <IonButton color="danger" onClick={() => confirmDelete(u.id)}>
-                                                Delete
-                                            </IonButton>
-                                        </IonButtons>
+                    <div className="admin-grid">
+                        <IonCard className="ui-card admin-card">
+                            <IonCardHeader>
+                                <IonCardTitle>Overview</IonCardTitle>
+                            </IonCardHeader>
+                            <IonCardContent>
+                                <div className="admin-overview">
+                                    <div className="admin-metric">
+                                        <div className="admin-metric-label">Total users</div>
+                                        <div className="admin-metric-value">{stats?.totalUsers ?? "—"}</div>
+                                    </div>
 
-                                    </IonItem>
-                                ))}
-                            </IonList>
-                        )}
-                    </IonCardContent>
-                </IonCard>
+                                    <div className="admin-hint">
+                                        Tip: Promote/demote admins and remove unused accounts.
+                                    </div>
+                                </div>
+                            </IonCardContent>
+                        </IonCard>
+
+                        <IonCard className="ui-card admin-card admin-card--wide">
+                            <IonCardHeader>
+                                <IonCardTitle>User Management</IonCardTitle>
+                            </IonCardHeader>
+                            <IonCardContent>
+                                {users.length === 0 ? (
+                                    <div className="admin-empty">No users found.</div>
+                                ) : (
+                                    <IonList className="admin-list">
+                                        {users.map((u) => (
+                                            <IonItem key={u.id} lines="none" className="admin-row" detail={false}>
+                                                {/* ✅ control total: nu mai folosim slot=end */}
+                                                <div className="admin-row-grid">
+                                                    <div className="admin-row-info">
+                                                        <div className="admin-username" title={u.username}>
+                                                            @{u.username}
+                                                        </div>
+                                                        <div className="admin-meta">ID: {u.id}</div>
+                                                    </div>
+
+                                                    <div className="admin-row-role">
+                                                        <span className={`role-badge role-${u.role.toLowerCase()}`}>{u.role}</span>
+                                                    </div>
+
+                                                    <div className="admin-row-actions">
+                                                        <IonButton
+                                                            className="secondary-button"
+                                                            onClick={() => toggleRole(u)}
+                                                            disabled={isLoading}
+                                                        >
+                                                            {u.role === "ADMIN" ? "Demote" : "Promote"}
+                                                        </IonButton>
+
+                                                        <IonButton
+                                                            className="danger-button"
+                                                            onClick={() => confirmDelete(u.id)}
+                                                            disabled={isLoading}
+                                                        >
+                                                            Delete
+                                                        </IonButton>
+                                                    </div>
+                                                </div>
+                                            </IonItem>
+                                        ))}
+                                    </IonList>
+                                )}
+                            </IonCardContent>
+                        </IonCard>
+                    </div>
+                </div>
+
                 <IonAlert
                     isOpen={deleteUserId !== null}
                     header="Delete user?"
                     message="This action cannot be undone."
                     buttons={[
-                        {
-                            text: "Cancel",
-                            role: "cancel",
-                            handler: () => setDeleteUserId(null),
-                        },
-                        {
-                            text: "Delete",
-                            role: "destructive",
-                            handler: doDelete,
-                        },
+                        { text: "Cancel", role: "cancel", handler: () => setDeleteUserId(null) },
+                        { text: "Delete", role: "destructive", handler: doDelete },
                     ]}
                     onDidDismiss={() => setDeleteUserId(null)}
                 />
-                <IonLoading isOpen={isLoading} message="Loading admin stats..." />
+
+                <IonLoading isOpen={isLoading} message="Loading admin data..." />
                 <IonToast
                     isOpen={showError}
                     message={errorMessage}

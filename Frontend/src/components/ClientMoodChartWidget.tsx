@@ -11,6 +11,31 @@ type Point = {
     createdAt: string;
 };
 
+// ✅ 5 culori (cerința ta)
+const moodColor = (score: number) => {
+    switch (score) {
+        case 1: return "#E53935"; // roșu intens
+        case 2: return "#FF6B6B"; // roșu deschis
+        case 3: return "#FF9800"; // portocaliu
+        case 4: return "#66BB6A"; // verde deschis
+        case 5: return "#00C853"; // verde aprins
+        default: return "#9E9E9E";
+    }
+};
+
+const moodLabel = (score: number) => {
+    switch (score) {
+        case 1: return "Very bad";
+        case 2: return "Bad";
+        case 3: return "Okay";
+        case 4: return "Good";
+        case 5: return "Very good";
+        default: return "—";
+    }
+};
+
+const clampScore = (s: number) => Math.max(1, Math.min(5, Math.round(s)));
+
 const ClientMoodChartWidget: React.FC<Props> = ({ clientId }) => {
     const [items, setItems] = useState<MoodPoint[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -50,8 +75,9 @@ const ClientMoodChartWidget: React.FC<Props> = ({ clientId }) => {
         const maxX = Math.max(1, sorted.length - 1);
 
         const mapY = (score: number) => {
+            const sc = clampScore(score);
             // score 1..5 -> 0..1
-            const t = (score - 1) / 4;
+            const t = (sc - 1) / 4;
             // invert so 5 is top
             return pad.t + (1 - t) * innerH;
         };
@@ -59,7 +85,7 @@ const ClientMoodChartWidget: React.FC<Props> = ({ clientId }) => {
         return sorted.map((p, idx) => {
             const x = pad.l + (idx / maxX) * innerW;
             const y = mapY(p.score);
-            return { x, y, score: p.score, createdAt: p.createdAt };
+            return { x, y, score: clampScore(p.score), createdAt: p.createdAt };
         });
     }, [sorted, innerW, innerH, pad.l, pad.t]);
 
@@ -84,8 +110,130 @@ const ClientMoodChartWidget: React.FC<Props> = ({ clientId }) => {
     const formatDate = (iso: string) => new Date(iso).toLocaleDateString();
     const formatDateTime = (iso: string) => new Date(iso).toLocaleString();
 
+    // ✅ Average mood (cerut)
+    const avg = useMemo(() => {
+        if (sorted.length === 0) return null;
+        const sum = sorted.reduce((acc, p) => acc + clampScore(p.score), 0);
+        const v = sum / sorted.length;
+        return Math.round(v * 10) / 10; // 1 zecimală
+    }, [sorted]);
+
+    const avgRoundedInt = useMemo(() => {
+        if (avg == null) return null;
+        return clampScore(Math.round(avg));
+    }, [avg]);
+
+    const avgColor = avgRoundedInt == null ? "#9E9E9E" : moodColor(avgRoundedInt);
+
+    // helper pt tooltip
+    const getTooltipBox = (p: Point) => {
+        const boxW = 200;
+        const boxH = 56;
+        const left = Math.min(p.x + 10, W - boxW - 6);
+        const top = Math.max(p.y - boxH - 10, 6);
+        return { left, top, boxW, boxH };
+    };
+
     return (
         <>
+            {/* ✅ Average mood card (graficul 2 cerut) */}
+            <IonCard>
+                <IonCardHeader>
+                    <IonCardTitle>Average mood</IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                    {sorted.length === 0 ? (
+                        <div style={{ opacity: 0.7 }}>No mood entries yet.</div>
+                    ) : (
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "1fr",
+                                gap: 12,
+                                padding: 12,
+                                borderRadius: 16,
+                                border: "1px solid rgba(123, 97, 255, 0.18)",
+                                background: "rgba(123, 97, 255, 0.06)",
+                            }}
+                        >
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                                <div>
+                                    <div style={{ fontSize: 12, opacity: 0.75 }}>Average score</div>
+                                    <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                                        <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.02em" }}>
+                                            {avg}
+                                        </div>
+                                        <div style={{ fontSize: 14, opacity: 0.7, fontWeight: 800 }}>/5</div>
+                                    </div>
+                                    <div style={{ marginTop: 2, opacity: 0.8, fontWeight: 700 }}>
+                                        {avgRoundedInt ? moodLabel(avgRoundedInt) : "—"}
+                                    </div>
+                                </div>
+
+                                <div
+                                    style={{
+                                        minWidth: 56,
+                                        height: 44,
+                                        borderRadius: 14,
+                                        display: "grid",
+                                        placeItems: "center",
+                                        color: "#fff",
+                                        fontWeight: 900,
+                                        fontSize: 18,
+                                        background: avgColor,
+                                        boxShadow: "0 14px 26px rgba(0,0,0,0.12)",
+                                    }}
+                                    title="Average rounded"
+                                >
+                                    {avgRoundedInt ?? "—"}
+                                </div>
+                            </div>
+
+                            {/* bar */}
+                            <div
+                                style={{
+                                    width: "100%",
+                                    height: 12,
+                                    borderRadius: 999,
+                                    overflow: "hidden",
+                                    background: "rgba(0,0,0,0.06)",
+                                    border: "1px solid rgba(0,0,0,0.06)",
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        height: "100%",
+                                        width: `${avg == null ? 0 : (avg / 5) * 100}%`,
+                                        background: avgColor,
+                                        borderRadius: 999,
+                                        transition: "width 220ms ease",
+                                    }}
+                                />
+                            </div>
+
+                            {/* legend */}
+                            <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 2 }}>
+                                {[1, 2, 3, 4, 5].map((s) => (
+                                    <span
+                                        key={s}
+                                        title={`${s} - ${moodLabel(s)}`}
+                                        style={{
+                                            width: 10,
+                                            height: 10,
+                                            borderRadius: 999,
+                                            background: moodColor(s),
+                                            boxShadow: "0 6px 12px rgba(0,0,0,0.10)",
+                                            display: "inline-block",
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </IonCardContent>
+            </IonCard>
+
+            {/* ✅ Trend chart card */}
             <IonCard>
                 <IonCardHeader>
                     <IonCardTitle>Mood trend</IonCardTitle>
@@ -96,8 +244,12 @@ const ClientMoodChartWidget: React.FC<Props> = ({ clientId }) => {
                         <div style={{ opacity: 0.7 }}>No mood entries yet.</div>
                     ) : (
                         <>
-                            <div style={{ marginBottom: 10, opacity: 0.8 }}>
-                                Last recorded: <b>{lastPoint?.score}</b> (1–5) · {lastPoint ? formatDateTime(lastPoint.createdAt) : ""}
+                            <div style={{ marginBottom: 10, opacity: 0.85 }}>
+                                Last recorded:{" "}
+                                <b style={{ color: lastPoint ? moodColor(lastPoint.score) : "currentColor" }}>
+                                    {lastPoint?.score}
+                                </b>{" "}
+                                (1–5) · {lastPoint ? formatDateTime(lastPoint.createdAt) : ""}
                             </div>
 
                             <div style={{ overflowX: "auto" }}>
@@ -107,6 +259,32 @@ const ClientMoodChartWidget: React.FC<Props> = ({ clientId }) => {
                                     style={{ display: "block" }}
                                     onMouseLeave={() => setActiveIdx(null)}
                                 >
+                                    {/* defs for glow */}
+                                    <defs>
+                                        <filter id="moodGlow" x="-50%" y="-50%" width="200%" height="200%">
+                                            <feGaussianBlur stdDeviation="5" result="blur" />
+                                            <feColorMatrix
+                                                in="blur"
+                                                type="matrix"
+                                                values="
+                          1 0 0 0 0
+                          0 1 0 0 0
+                          0 0 1 0 0
+                          0 0 0 0.35 0"
+                                                result="coloredBlur"
+                                            />
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur" />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
+                                        </filter>
+
+                                        <linearGradient id="lavLine" x1="0" x2="1">
+                                            <stop offset="0%" stopColor="rgba(123,97,255,0.35)" />
+                                            <stop offset="100%" stopColor="rgba(123,97,255,0.70)" />
+                                        </linearGradient>
+                                    </defs>
+
                                     {/* Grid horizontal + Y labels */}
                                     {yTicks.map((t) => {
                                         const y = pad.t + (1 - (t - 1) / 4) * innerH;
@@ -152,17 +330,17 @@ const ClientMoodChartWidget: React.FC<Props> = ({ clientId }) => {
                                         opacity="0.35"
                                     />
 
-                                    {/* Axis titles (subtle) */}
+                                    {/* Axis titles */}
                                     <text x={pad.l} y={12} fontSize="11" fill="currentColor" opacity="0.75">
                                         Mood (1–5)
                                     </text>
 
-                                    {/* Polyline */}
+                                    {/* Polyline (lavender) */}
                                     <polyline
                                         points={polylinePoints}
                                         fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="3"
+                                        stroke="url(#lavLine)"
+                                        strokeWidth="3.2"
                                         opacity="0.95"
                                         strokeLinejoin="round"
                                         strokeLinecap="round"
@@ -171,25 +349,43 @@ const ClientMoodChartWidget: React.FC<Props> = ({ clientId }) => {
                                     {/* Points + interaction */}
                                     {points.map((p, idx) => {
                                         const active = activeIdx === idx;
+                                        const c = moodColor(p.score);
+
                                         return (
                                             <g key={idx}>
                                                 {/* bigger invisible hit area */}
                                                 <circle
                                                     cx={p.x}
                                                     cy={p.y}
-                                                    r={12}
+                                                    r={14}
                                                     fill="transparent"
                                                     onMouseEnter={() => setActiveIdx(idx)}
                                                     onClick={() => setActiveIdx(idx)}
                                                     style={{ cursor: "pointer" }}
                                                 />
+
+                                                {/* active ring */}
+                                                {active && (
+                                                    <circle
+                                                        cx={p.x}
+                                                        cy={p.y}
+                                                        r={11}
+                                                        fill="transparent"
+                                                        stroke={c}
+                                                        strokeWidth={3}
+                                                        opacity={0.95}
+                                                        filter="url(#moodGlow)"
+                                                    />
+                                                )}
+
                                                 {/* visible dot */}
                                                 <circle
                                                     cx={p.x}
                                                     cy={p.y}
-                                                    r={active ? 5 : 4}
-                                                    fill="currentColor"
-                                                    opacity={active ? 1 : 0.85}
+                                                    r={active ? 6 : 5}
+                                                    fill={c}
+                                                    opacity={1}
+                                                    style={{ filter: "drop-shadow(0 10px 14px rgba(0,0,0,0.14))" }}
                                                 />
                                             </g>
                                         );
@@ -214,12 +410,8 @@ const ClientMoodChartWidget: React.FC<Props> = ({ clientId }) => {
                                     {activeIdx !== null && points[activeIdx] && (
                                         (() => {
                                             const p = points[activeIdx];
-                                            const boxW = 180;
-                                            const boxH = 46;
-
-                                            // keep tooltip within bounds
-                                            const left = Math.min(p.x + 10, W - boxW - 6);
-                                            const top = Math.max(p.y - boxH - 10, 6);
+                                            const { left, top, boxW, boxH } = getTooltipBox(p);
+                                            const c = moodColor(p.score);
 
                                             return (
                                                 <g>
@@ -228,16 +420,39 @@ const ClientMoodChartWidget: React.FC<Props> = ({ clientId }) => {
                                                         y={top}
                                                         width={boxW}
                                                         height={boxH}
+                                                        rx={12}
+                                                        ry={12}
+                                                        fill="var(--ion-card-background, #fff)"
+                                                        stroke={c}
+                                                        opacity="0.97"
+                                                    />
+
+                                                    {/* score badge (colored, text white) */}
+                                                    <rect
+                                                        x={left + 10}
+                                                        y={top + 10}
+                                                        width={34}
+                                                        height={28}
                                                         rx={10}
                                                         ry={10}
-                                                        fill="var(--ion-card-background, #fff)"
-                                                        stroke="currentColor"
-                                                        opacity="0.95"
+                                                        fill={c}
+                                                        opacity="1"
                                                     />
-                                                    <text x={left + 10} y={top + 18} fontSize="12" fill="currentColor" opacity="0.9">
-                                                        Score: {p.score}
+                                                    <text
+                                                        x={left + 27}
+                                                        y={top + 30}
+                                                        textAnchor="middle"
+                                                        fontSize="13"
+                                                        fill="#fff"
+                                                        style={{ fontWeight: 900 }}
+                                                    >
+                                                        {p.score}
                                                     </text>
-                                                    <text x={left + 10} y={top + 36} fontSize="11" fill="currentColor" opacity="0.7">
+
+                                                    <text x={left + 52} y={top + 22} fontSize="12" fill="currentColor" opacity="0.92">
+                                                        {moodLabel(p.score)}
+                                                    </text>
+                                                    <text x={left + 52} y={top + 42} fontSize="11" fill="currentColor" opacity="0.7">
                                                         {formatDateTime(p.createdAt)}
                                                     </text>
                                                 </g>

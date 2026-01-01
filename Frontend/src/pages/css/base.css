@@ -1,0 +1,39 @@
+:root {
+    --app-max-width: 1100px;
+    --app-gutter: 16px;
+    --tap-min: 44px;
+}
+
+/* consistent container */
+.app-shell {
+    max-width: var(--app-max-width);
+    margin: 0 auto;
+    padding: 20px var(--app-gutter) 40px;
+}
+
+/* phone spacing */
+@media (max-width: 420px) {
+    :root { --app-gutter: 14px; }
+}
+
+/* make controls tappable */
+ion-button,
+ion-input,
+ion-item,
+button {
+    min-height: var(--tap-min);
+}
+
+/* panic button fixed */
+.panic-fab {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9999;
+}
+@supports (padding: env(safe-area-inset-bottom)) {
+    .panic-fab {
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        right: calc(16px + env(safe-area-inset-right));
+    }
+}
