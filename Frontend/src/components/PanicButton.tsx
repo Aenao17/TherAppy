@@ -23,7 +23,8 @@ const PanicButton: React.FC<Props> = ({ enabled }) => {
     const [toastMsg, setToastMsg] = useState("");
     const [showToast, setShowToast] = useState(false);
 
-    const [videoRoomId, setVideoRoomId] = useState<string | null>(null);
+    const [callDetails, setCallDetails] = useState<{roomId: string, token: string} | null>(null);
+    // const [videoRoomId, setVideoRoomId] = useState<string | null>(null);
 
     const holdTimerRef = useRef<number | null>(null);
     const holdStartRef = useRef<number>(0);
@@ -31,9 +32,12 @@ const PanicButton: React.FC<Props> = ({ enabled }) => {
     const progressTimerRef = useRef<number | null>(null);
 
     useClientPanicSocket((event) => {
-        if (event.withVideo && event.videoRoomId) {
-            // Caz 1: Psihologul a acceptat apelul -> Intrăm automat în video
-            setVideoRoomId(event.videoRoomId);
+        if (event.withVideo && event.videoRoomId && event.jitsiToken) {
+            // Caz 1: Psihologul a acceptat apelul -> Intrăm automat în video CU TOKEN
+            setCallDetails({
+                roomId: event.videoRoomId,
+                token: event.jitsiToken
+            });
         } else {
             // Caz 2: Doar confirmare simplă
             setToastMsg(`👨‍⚕️ Psihologul ${event.psychologistUsername} a confirmat alerta.`);
@@ -106,13 +110,14 @@ const PanicButton: React.FC<Props> = ({ enabled }) => {
     // --- RENDER ---
 
     // Dacă suntem în apel, deschidem fereastra video peste tot
-    if (videoRoomId) {
+    if (callDetails) {
         return (
             <IonModal isOpen={true} backdropDismiss={false}>
                 <VideoRoom
-                    roomName={videoRoomId}
+                    roomName={callDetails.roomId}
                     displayName="Client"
-                    onClose={() => setVideoRoomId(null)}
+                    jwt={callDetails.token} // <--- TOKEN
+                    onClose={() => setCallDetails(null)}
                 />
             </IonModal>
         );

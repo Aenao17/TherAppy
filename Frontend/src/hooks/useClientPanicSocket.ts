@@ -8,6 +8,7 @@ export type PanicAckEvent = {
     withVideo: boolean;
     psychologistUsername: string;
     videoRoomId: string;
+    jitsiToken: string;
 };
 
 export function useClientPanicSocket(

@@ -7,5 +7,6 @@ public record PanicWsEvent(
         String clientUsername,
         boolean triggeredByLongPress,
         Instant createdAt,
-        String videoRoomId
+        String videoRoomId,
+        String jitsiToken
 ) {}

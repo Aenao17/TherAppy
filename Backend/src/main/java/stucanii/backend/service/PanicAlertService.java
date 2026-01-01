@@ -10,6 +10,7 @@ import stucanii.backend.api.events.PanicWsEvent;
 import stucanii.backend.domain.*;
 import stucanii.backend.repository.PanicAlertRepository;
 import stucanii.backend.repository.UserRepository;
+import stucanii.backend.security.JitsiTokenService;
 
 import java.util.List;
 
@@ -19,15 +20,18 @@ public class PanicAlertService {
     private final UserRepository userRepository;
     private final PanicAlertRepository panicRepo;
     private final SimpMessagingTemplate messaging;
+    private final JitsiTokenService jitsiService;
 
     public PanicAlertService(
             UserRepository userRepository,
             PanicAlertRepository panicRepo,
-            SimpMessagingTemplate messaging
+            SimpMessagingTemplate messaging,
+            JitsiTokenService jitsiService
     ) {
         this.userRepository = userRepository;
         this.panicRepo = panicRepo;
         this.messaging = messaging;
+        this.jitsiService = jitsiService;
     }
 
 
@@ -48,6 +52,15 @@ public class PanicAlertService {
         PanicAlert alert = new PanicAlert(client, psych, longPress);
         panicRepo.save(alert);
 
+        String fullRoomName = alert.getVideoRoomId();
+
+        String jitsiToken = jitsiService.generateToken(
+                psych.getUsername(),
+                "",
+                "", // avatar url opțional
+                fullRoomName
+        );
+
         messaging.convertAndSend(
                 "/topic/panic/" + psych.getUsername(),
                 new PanicWsEvent(
@@ -55,7 +68,8 @@ public class PanicAlertService {
                         client.getUsername(),
                         longPress,
                         alert.getCreatedAt(),
-                        alert.getVideoRoomId()
+                        alert.getVideoRoomId(),
+                        jitsiToken
                 )
         );
 
@@ -87,13 +101,24 @@ public class PanicAlertService {
         alert.acknowledge();
         panicRepo.save(alert);
 
+        String clientToken = null;
+        if (withVideo) {
+            clientToken = jitsiService.generateToken(
+                    alert.getClient().getUsername(),
+                    "",
+                    "",
+                    alert.getVideoRoomId()
+            );
+        }
+
         messaging.convertAndSend(
                 "/topic/panic-updates/" + alert.getClient().getUsername(),
                 new PanicAckEvent(
                         alert.getId(),
                         withVideo,
                         psychologistUsername,
-                        alert.getVideoRoomId()
+                        alert.getVideoRoomId(),
+                        clientToken
                 )
         );
     }

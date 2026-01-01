@@ -114,6 +114,7 @@ const PanicAlarmOverlay: React.FC<Props> = ({ event, onClose }) => {
                 <VideoRoom
                     roomName={event.videoRoomId}
                     displayName="Psiholog"
+                    jwt={event.jitsiToken}
                     onClose={() => {
                         setInCall(false);
                         onClose(); // Închidem tot overlay-ul când se termină apelul

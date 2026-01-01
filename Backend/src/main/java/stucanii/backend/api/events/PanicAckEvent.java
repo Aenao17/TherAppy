@@ -4,5 +4,6 @@ public record PanicAckEvent(
         Integer alertId,
         boolean withVideo,
         String psychologistUsername,
-        String videoRoomId
+        String videoRoomId,
+        String jitsiToken
 ) {}

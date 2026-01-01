@@ -21,3 +21,36 @@ app:
     ttlSeconds: 1209600
 server:
   port: 8080
+
+jitsi:
+  app-id: "vpaas-magic-cookie-b5477847648e449890e0f643c9909407"
+  key-id: "vpaas-magic-cookie-b5477847648e449890e0f643c9909407/47d77b"
+  private-key: |
+    -----BEGIN PRIVATE KEY-----
+    MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCN8PvnGBIlwDZ4
+    Kl5Ur7iUl7tlvZeHRVgmlSDPPRQoCH4uut1F5VZywJ4TE+foOCfRyDN+I8l1LUpe
+    /uJiLJ4XnFjqWUjnw5xySfoLhEUv9OT1Fw9NaSyzT+hI+UCk6MXIsMg1gfL+lkWr
+    R72/h8mQNsmkT7bEGgPRCwlQbJh5SkyiAaJL/0Ny+UI5DxuYCqf1L1ZlYG+Sh/iO
+    1mRyKx+8MBOKCTRlVioQPJAN+A03CG5I2HlhF9D+QT0DZwDDg9TK9FsIw+ed1dJx
+    IVFAXQB0HCdnAFWTesesUxffIa2w3pX4YUstAgkvJt0uFZiXlnCoPKCINmND8bBz
+    75xzkPp1AgMBAAECggEALrtdpEsnhmhPRqbkYcts4PdHyopuPioViLZmk/SPE1Mg
+    gDAjs+R63tMN+EgAfVMnwQjB81DC/iJILxiJ3jrEXg+qspVszGl5s6MpgOsugEiH
+    rS3HavwqrGqtloEByImevKF/eSZso2dETs0S6uFA+osfPkrEaLIL+aJBkcn/NUdC
+    8yu73MVYNTj15c4gjPBXdz+1DlCZpudpakYlFJhrbu3nkJYoHw1cnAxJvjb66AAt
+    p+svelYKfi5fAA9jqMcCNdJAgeUs4tOZ+XQQH7rwUQ0I9MXhD0R2aeANRoCSVCjt
+    sSpk7SaUiucfdKqA4Rq1HLe/kLpT5n+nAoXAm87h4QKBgQDfZZOTGo455199pIFA
+    CnhOf6Qjla9tFBh88cbpUvUSoVkbDgOqS/UFITqaustWAEGy0b6dZxFMbMte928y
+    rW1cvxMyFAMF0Q+LuR9P+xztgbQj1NwRHHJjIbfRr6BEY41lGvylHZjJsRDe8KW9
+    It0P/bqYCT4u5wa1UEVNJOWk7QKBgQCiqB2hLfyNUULPyHwUlbZFMxCifc6NfgHy
+    NvK0kqWKmm0oRM7Asm/9ojK8VXS4RSexZCGvZUY1W7dGLRzcc8MGsfP/NATF8StB
+    2ot+4dxaOpXt7qy8F8RCP8KFJNFC5l2vmaJRtYgZbO8PvhuW1h/lY5VtopN9yE8E
+    LZAlpPpCqQKBgQCEMXpzWQqCjzy9f6QQPmHUqcl6WTA2zuZywSuglDt7a8jrro5S
+    rqHuCCzCtPhwCrTV2TH/uKbO3640oxzFE0Uc1eDJCHiFb6HQX5p83K7QiKkNbv9O
+    jNPPf3tj9JZVAcgA5UhNeMcZytKd6i9ZTZEczlslborCfGlGz5pCvSu7PQKBgQCV
+    Weha5u7Ok57VSzEjdZQ3VfwgN4RBR0JiNTIFu+FkswcnwoZVSYKrURNk+tKBoH4h
+    099aPZOJyv0t4p5tjZ21uBBidFEtr5QYk6MijiDWeJTSNCVHUEtUyVbDCltbIktD
+    wb3ZaOXe8rdPrS+IAHSpHBdI486p4BMtsuh4qFNigQKBgAgyupwRLG1pRp80Oa0p
+    c8XhQcs8dobWaL/13+U18e1SAK2oNIJudRvVj0f+YWTZLp1J90s1M6zt1VYYcsLR
+    rauqh1fh90jTcENufPokHxvN1j76tHO9uf1A7ETRNl2gLSXFTa4JDyOl17AOG9cw
+    ALGbH3bfbJ/f5tOyByYFyfwh
+    -----END PRIVATE KEY-----

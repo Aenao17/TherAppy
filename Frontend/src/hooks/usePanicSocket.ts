@@ -8,6 +8,7 @@ export type PanicEvent = {
     triggeredByLongPress: boolean;
     createdAt: string;
     videoRoomId: string;
+    jitsiToken: string;
 };
 
 export function usePanicSocket(
