@@ -1,36 +1,40 @@
 import { useEffect, useRef } from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import { getDecodedToken } from "../auth/authStorage";
 
-export type PanicEvent = {
+export type PanicAckEvent = {
     alertId: number;
-    clientUsername: string;
-    triggeredByLongPress: boolean;
-    createdAt: string;
+    withVideo: boolean;
+    psychologistUsername: string;
     videoRoomId: string;
     jitsiToken: string;
 };
 
-export function usePanicSocket(
-    psychologistUsername: string | null,
-    onEvent: (e: PanicEvent) => void
+export function useClientPanicSocket(
+    onAck: (e: PanicAckEvent) => void
 ) {
     const clientRef = useRef<Stomp.Client | null>(null);
 
     useEffect(() => {
-        if (!psychologistUsername) return;
+        // Luăm username-ul direct din token-ul stocat
+        const token = getDecodedToken();
+        const username = token?.sub;
+
+        if (!username) return;
 
         const socket = new SockJS("http://localhost:8080/ws");
         const client = Stomp.over(socket);
 
-        client.debug = () => {}; // silence logs
+        client.debug = () => {}; // Oprim logurile din consolă
 
         client.connect({}, () => {
+            // Ascultăm pe canalul personalizat al clientului
             client.subscribe(
-                `/topic/panic/${psychologistUsername}`,
+                `/topic/panic-updates/${username}`,
                 (msg) => {
-                    const data = JSON.parse(msg.body) as PanicEvent;
-                    onEvent(data);
+                    const data = JSON.parse(msg.body) as PanicAckEvent;
+                    onAck(data);
                 }
             );
         });
@@ -42,5 +46,5 @@ export function usePanicSocket(
                 clientRef.current.disconnect(() => {});
             }
         };
-    }, [psychologistUsername, onEvent]);
+    }, [onAck]);
 }

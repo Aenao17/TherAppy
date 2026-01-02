@@ -5,10 +5,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import stucanii.backend.api.events.PanicAckEvent;
 import stucanii.backend.api.events.PanicWsEvent;
 import stucanii.backend.domain.*;
 import stucanii.backend.repository.PanicAlertRepository;
 import stucanii.backend.repository.UserRepository;
+import stucanii.backend.security.JitsiTokenService;
 
 import java.util.List;
 
@@ -18,20 +20,23 @@ public class PanicAlertService {
     private final UserRepository userRepository;
     private final PanicAlertRepository panicRepo;
     private final SimpMessagingTemplate messaging;
+    private final JitsiTokenService jitsiService;
 
     public PanicAlertService(
             UserRepository userRepository,
             PanicAlertRepository panicRepo,
-            SimpMessagingTemplate messaging
+            SimpMessagingTemplate messaging,
+            JitsiTokenService jitsiService
     ) {
         this.userRepository = userRepository;
         this.panicRepo = panicRepo;
         this.messaging = messaging;
+        this.jitsiService = jitsiService;
     }
 
 
     @Transactional
-    public Integer trigger(String clientUsername, boolean longPress) {
+    public PanicAlert trigger(String clientUsername, boolean longPress) {
         User client = userRepository.findByUsername(clientUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
@@ -47,17 +52,28 @@ public class PanicAlertService {
         PanicAlert alert = new PanicAlert(client, psych, longPress);
         panicRepo.save(alert);
 
+        String fullRoomName = alert.getVideoRoomId();
+
+        String jitsiToken = jitsiService.generateToken(
+                psych.getUsername(),
+                "",
+                "", // avatar url opțional
+                fullRoomName
+        );
+
         messaging.convertAndSend(
                 "/topic/panic/" + psych.getUsername(),
                 new PanicWsEvent(
                         alert.getId(),
                         client.getUsername(),
                         longPress,
-                        alert.getCreatedAt()
+                        alert.getCreatedAt(),
+                        alert.getVideoRoomId(),
+                        jitsiToken
                 )
         );
 
-        return alert.getId();
+        return alert;
 
     }
 
@@ -74,7 +90,7 @@ public class PanicAlertService {
     }
 
     @Transactional
-    public void acknowledge(String psychologistUsername, Integer alertId) {
+    public void acknowledge(String psychologistUsername, Integer alertId, boolean withVideo) {
         PanicAlert alert = panicRepo.findById(alertId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alert not found"));
 
@@ -84,5 +100,26 @@ public class PanicAlertService {
 
         alert.acknowledge();
         panicRepo.save(alert);
+
+        String clientToken = null;
+        if (withVideo) {
+            clientToken = jitsiService.generateToken(
+                    alert.getClient().getUsername(),
+                    "",
+                    "",
+                    alert.getVideoRoomId()
+            );
+        }
+
+        messaging.convertAndSend(
+                "/topic/panic-updates/" + alert.getClient().getUsername(),
+                new PanicAckEvent(
+                        alert.getId(),
+                        withVideo,
+                        psychologistUsername,
+                        alert.getVideoRoomId(),
+                        clientToken
+                )
+        );
     }
 }
