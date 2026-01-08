@@ -30,6 +30,7 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: 10MB
+  address: 0.0.0.0
 
 jitsi:
   app-id: "vpaas-magic-cookie-b5477847648e449890e0f643c9909407"

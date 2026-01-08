@@ -1,5 +1,15 @@
-const BASE_URL = "http://localhost:8080"; // pentru moment, hardcodat
 
+import { Capacitor } from '@capacitor/core';
+
+const getBaseUrl = () => {
+    if (Capacitor.getPlatform() === 'android') {
+        // 10.0.2.2 este adresa specială prin care Emulatorul Android vede localhost-ul PC-ului
+        return "http://10.0.2.2:8080";
+    }
+    return "http://localhost:8080";
+};
+const BASE_URL = getBaseUrl();
+// const BASE_URL = "http://10.0.2.2:8080";
 export type ApiError = {
     error?: string;
 };
