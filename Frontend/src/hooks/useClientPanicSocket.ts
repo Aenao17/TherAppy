@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import { getDecodedToken } from "../auth/authStorage";
+import { BASE_URL } from "../api/api";
 
 export type PanicAckEvent = {
     alertId: number;
@@ -23,13 +24,14 @@ export function useClientPanicSocket(
 
         if (!username) return;
 
-        const socket = new SockJS("http://localhost:8080/ws");
+        const socket = new SockJS(`${BASE_URL}/ws`);
         const client = Stomp.over(socket);
 
         client.debug = () => {}; // Oprim logurile din consolă
 
         client.connect({}, () => {
             // Ascultăm pe canalul personalizat al clientului
+            console.log("Client panic socket connected to " + BASE_URL);
             client.subscribe(
                 `/topic/panic-updates/${username}`,
                 (msg) => {
@@ -37,6 +39,8 @@ export function useClientPanicSocket(
                     onAck(data);
                 }
             );
+        }, (error)=> {
+            console.error("Client panic socket connection error:", error);
         });
 
         clientRef.current = client;

@@ -8,7 +8,7 @@ const getBaseUrl = () => {
     }
     return "http://localhost:8080";
 };
-const BASE_URL = getBaseUrl();
+export const BASE_URL = getBaseUrl();
 // const BASE_URL = "http://10.0.2.2:8080";
 export type ApiError = {
     error?: string;
